@@ -2,6 +2,7 @@ import '../css/app.css'
 import './bootstrap'
 
 import { createInertiaApp } from '@inertiajs/react'
+import { NextUIProvider } from '@nextui-org/react'
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers'
 import { createRoot, hydrateRoot } from 'react-dom/client'
 
@@ -16,11 +17,20 @@ createInertiaApp({
     ),
   setup({ el, App, props }) {
     if (import.meta.env.SSR) {
-      hydrateRoot(el, <App {...props} />)
+      hydrateRoot(
+        el,
+        <NextUIProvider>
+          <App {...props} />
+        </NextUIProvider>,
+      )
       return
     }
 
-    createRoot(el).render(<App {...props} />)
+    createRoot(el).render(
+      <NextUIProvider>
+        <App {...props} />
+      </NextUIProvider>,
+    )
   },
   progress: {
     color: '#4B5563',
