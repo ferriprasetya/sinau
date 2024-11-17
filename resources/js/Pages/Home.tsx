@@ -17,8 +17,8 @@ export default function Home() {
       score: 10,
       timestamp: '1 hour ago',
       cardImage:
-        'https://thumbs.dreamstime.com/b/hd-wallpapers-peacock-forest-ai-hd-wallpapers-peacock-forest-307012823.jpg',
-      slug: '/question/how-to-create-a-new-project-in-laravel',
+        'https://i.pinimg.com/736x/62/7e/d6/627ed6d6af86d01d542cc2118273a429.jpg',
+      slug: 'Kak mau tanyaaa, itu cara nengahinnya gimana ya? dari kemarin proyek saya error terus',
       answered: 1,
       up: 10,
       down: 1,
