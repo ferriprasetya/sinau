@@ -1,11 +1,12 @@
-import Checkbox from '@/Components/Checkbox'
 import GuestLayout from '@/Layouts/GuestLayout'
 import { Head, Link, useForm } from '@inertiajs/react'
-import { FormEventHandler, useState } from 'react'
-import { Button, Input } from '@nextui-org/react'
+import { FormEventHandler, useEffect, useState } from 'react'
+import { Checkbox } from '@nextui-org/react'
 import { EyeFilledIcon } from '@/Components/EyeFilledIcon'
 import { EyeSlashFilledIcon } from '@/Components/EyeSlashFilledIcon'
 import { FaGoogle } from 'react-icons/fa'
+import { Button } from '@/Components/Button'
+import { Input } from '@/Components/Input'
 
 export default function Login({
   status,
@@ -20,7 +21,7 @@ export default function Login({
     remember: false,
   })
 
-  const submit: FormEventHandler = (e) => {
+  const submit: FormEventHandler = async (e) => {
     e.preventDefault()
 
     post(route('login'), {
@@ -40,135 +41,110 @@ export default function Login({
         <div className='mb-4 text-sm font-medium text-green-600'>{status}</div>
       )}
 
-      <div className='text-3xl font-semibold leading-10 text-[#02092f]'>
+      <div className='mb-8 text-3xl font-semibold leading-10 text-foreground-900 md:mb-12'>
         Login
       </div>
 
-      <form onSubmit={submit}>
-        <div className='mt-10'>
-          <Input
-            errorMessage={errors.email}
-            name='email'
-            value={data.email}
-            onChange={(e) => setData('email', e.target.value)}
-            isInvalid={!!errors.email}
-            isRequired
-            type='email'
-            label='Email'
-            labelPlacement='outside'
-            placeholder='Enter your email'
-            variant='flat'
-            classNames={{
-              label: 'text-black/50 dark:text-white/90',
-              input: [
-                'bg-transparent',
-                'text-black/90 ',
-                'placeholder:text-neutral-500 ',
-                'rounded-xl',
-                'focus:ring-0',
-                'active:ring-0',
-              ],
-              innerWrapper: ['bg-transparent', 'border-none', 'p-0'],
-              inputWrapper: ['p-0', 'border-none'],
-            }}
-            style={{ border: 'none' }}
-          />
-        </div>
-        <div className='mt-10'>
-          <Input
-            errorMessage={errors.password}
-            name='password'
-            value={data.password}
-            onChange={(e) => setData('password', e.target.value)}
-            isInvalid={!!errors.password}
-            isRequired
-            label='password'
-            labelPlacement='outside'
-            placeholder='Enter your password'
-            radius='lg'
-            variant='flat'
-            classNames={{
-              label: 'text-black/50 dark:text-white/90',
-              input: [
-                'bg-transparent',
-                'text-black/90 ',
-                'placeholder:text-neutral-500 ',
-                'rounded-xl',
-                'focus:ring-0',
-                'active:ring-0',
-              ],
-              innerWrapper: ['bg-transparent', 'border-none', 'p-0'],
-              inputWrapper: ['p-0', 'border-none'],
-            }}
-            endContent={
-              <button
-                className='mr-2 focus:outline-none'
-                type='button'
-                onClick={toggleVisibility}
-                aria-label='toggle password visibility'
-              >
-                {isVisible ? (
-                  <EyeSlashFilledIcon className='pointer-events-none text-2xl text-default-400' />
-                ) : (
-                  <EyeFilledIcon className='pointer-events-none text-2xl text-default-400' />
-                )}
-              </button>
-            }
-            type={isVisible ? 'text' : 'password'}
-            style={{ border: 'none' }}
-          />
-        </div>
+      <form onSubmit={submit} className='flex flex-col gap-6'>
+        <Input
+          errorMessage={errors.email}
+          name='email'
+          value={data.email}
+          onChange={(e) => setData('email', e.target.value)}
+          isInvalid={!!errors.email}
+          isRequired
+          type='email'
+          label='Email'
+          labelPlacement='outside'
+          placeholder='Masukkan email anda'
+        />
+        <Input
+          errorMessage={errors.password}
+          name='password'
+          value={data.password}
+          onChange={(e) => setData('password', e.target.value)}
+          isInvalid={!!errors.password}
+          isRequired
+          label='Password'
+          labelPlacement='outside'
+          placeholder='Masukkan password anda'
+          endContent={
+            <button
+              className='mr-2 focus:outline-none'
+              type='button'
+              onClick={toggleVisibility}
+              aria-label='toggle password visibility'
+            >
+              {isVisible ? (
+                <EyeSlashFilledIcon className='pointer-events-none text-2xl text-neutral-500' />
+              ) : (
+                <EyeFilledIcon className='pointer-events-none text-2xl text-neutral-500' />
+              )}
+            </button>
+          }
+          type={isVisible ? 'text' : 'password'}
+          style={{ border: 'none' }}
+        />
 
-        <div className='mt-4 flex flex-col items-center'>
+        <div className='flex flex-col items-center'>
           <div className='mb-3 flex w-full justify-between'>
-            <div className='mb-3 block self-start'>
-              <label className='flex items-center'>
-                <Checkbox
-                  name='remember'
-                  checked={data.remember}
-                  onChange={(e) => setData('remember', e.target.checked)}
-                />
-                <span className='ms-2 text-sm text-gray-600 dark:text-gray-400'>
-                  Remember me
-                </span>
-              </label>
-            </div>
+            <Checkbox
+              name='remember'
+              checked={data.remember}
+              onChange={(e) => setData('remember', e.target.checked)}
+              className='mb-3'
+              classNames={{
+                label: 'text-gray-600 hover:text-gray-900',
+              }}
+            >
+              Ingat saya
+            </Checkbox>
             {canResetPassword && (
               <Link
                 href={route('password.request')}
                 className='mb-3 rounded-md text-sm text-gray-600 underline hover:text-gray-900'
               >
-                Forgot your password?
+                Lupa password?
               </Link>
             )}
           </div>
+          <div className='flex w-full flex-col gap-3'>
+            <Button
+              color='primaryGradient'
+              className='w-full text-lg font-medium'
+              isLoading={processing}
+              onClick={submit}
+            >
+              Masuk
+            </Button>
 
-          <Button
-            className='mb-2 ms-4 w-full bg-gradient-to-r from-[#5451f2] to-[#9c7dfc] text-lg font-medium leading-7 text-blue-50'
-            isLoading={processing}
-            onClick={submit}
-          >
-            Masuk
-          </Button>
-          <div className='mb-2 flex items-center justify-center text-sm font-medium leading-7 text-[#999db1]'>
-            <hr className='' />
-            Atau Masuk <hr />
+            <div className='flex w-full items-center justify-center text-sm font-medium leading-7 text-neutral-600'>
+              <hr className='w-full' />
+              <span className='inline-block text-nowrap px-2'>
+                Atau masuk dengan
+              </span>
+              <hr className='w-full' />
+            </div>
+
+            <a className='block w-full' href={route('auth.google')}>
+              <Button
+                variant='bordered'
+                color='primary'
+                className='w-full text-lg font-medium'
+                startContent={<FaGoogle />}
+              >
+                Google
+              </Button>
+            </a>
           </div>
 
-          <Button
-            className='mb-3 ms-4 w-full border-2 border-[#6118e8] bg-transparent text-lg font-medium leading-7 text-[#6118e8]'
-            isLoading={processing}
-            onClick={submit}
-            startContent={<FaGoogle />}
-          >
-            Google
-          </Button>
-          <Link href={route('register')} className='mb-3 text-sm'>
-            <span className='text-[#777b8a] no-underline'>
-              Belum punya akun?
-            </span>
-            <span className='text-[#6118e8] no-underline'> Daftar</span>
-          </Link>
+          <div className='text-sm'>
+            <span className='text-[#777b8a]'>Belum punya akun?</span>
+            <Link href={route('register')} className='text-secondary'>
+              {' '}
+              Daftar
+            </Link>
+          </div>
         </div>
       </form>
     </GuestLayout>

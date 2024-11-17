@@ -20,7 +20,8 @@ import { IoLogOut, IoPersonCircle, IoPersonSharp } from 'react-icons/io5'
 import { HiMiniAcademicCap } from 'react-icons/hi2'
 
 export default function Navbar() {
-  const isLogin = !!(usePage().props as any).auth.user
+  const { auth } = usePage().props as any
+  const isLogin = !!auth.user
   const [isMenuOpen, setIsMenuOpen] = React.useState(false)
   const currentRoute = route().current()
 
@@ -92,7 +93,15 @@ export default function Navbar() {
                 </div>
               </div>
             </DropdownTrigger>
-            <DropdownMenu aria-label='Profile Actions'>
+            <DropdownMenu aria-label='Profile Actions' disabledKeys={['user']}>
+              <DropdownItem key='user' className='p-0 text-neutral-600'>
+                <div className='flex flex-col px-2'>
+                  <p className='font-medium text-foreground-900'>
+                    {auth.user.name}
+                  </p>
+                  <p className='font-medium'>{auth.user.email}</p>
+                </div>
+              </DropdownItem>
               <DropdownItem key='profile' className='p-0 text-neutral-600'>
                 <Link
                   href='/profile'
@@ -168,12 +177,23 @@ export default function Navbar() {
             <hr />
             <Link
               href='/profile'
-              className='flex cursor-pointer items-center gap-2 rounded-md border border-transparent px-3 py-1 transition-colors hover:border-primary hover:bg-secondary-50'
+              className='flex items-center gap-2 rounded-md border border-transparent px-3 py-1 transition-colors hover:border-primary hover:bg-secondary-50'
             >
-              <IoPersonCircle className='h-8 w-8 text-neutral-500' />
-              <div className='flex items-center gap-1 text-secondary'>
-                <HiMiniAcademicCap className='h-5 w-5' />
-                <p className='text-lg font-semibold'>431</p>
+              <IoPersonCircle className='h-10 w-10 text-neutral-500' />
+              <div className='flex flex-col'>
+                <div className='flex items-center gap-2'>
+                  <p className='font-medium text-foreground-900 opacity-70'>
+                    {auth.user.name}
+                  </p>
+
+                  <div className='flex items-center gap-1 text-secondary'>
+                    <HiMiniAcademicCap className='h-5 w-5' />
+                    <p className='text-lg font-semibold'>431</p>
+                  </div>
+                </div>
+                <p className='-mt-1 font-medium text-neutral-500'>
+                  {auth.user.email}
+                </p>
               </div>
             </Link>
             <Link
