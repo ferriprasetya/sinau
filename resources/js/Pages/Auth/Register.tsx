@@ -132,17 +132,17 @@ export default function Register() {
           style={{ border: 'none' }}
         />
 
-        <div className='mt-5 flex flex-col items-center justify-center'>
+        <div className='flex flex-col items-center justify-center'>
           <Button
             color='primaryGradient'
-            className='mb-3 w-full text-lg font-medium'
+            className='w-full text-lg font-medium'
             isLoading={processing}
             onClick={submit}
           >
             Daftar
           </Button>
 
-          <div className='mb-2 flex w-full items-center justify-center text-sm font-medium leading-7 text-neutral-600'>
+          <div className='flex w-full items-center justify-center text-sm font-medium leading-7 text-neutral-600'>
             <hr className='w-full' />
             <span className='inline-block text-nowrap px-2'>
               Atau daftar dengan
@@ -150,7 +150,7 @@ export default function Register() {
             <hr className='w-full' />
           </div>
 
-          <a className='mb-3 ms-4 block w-full' href={route('auth.google')}>
+          <a className='block w-full' href={route('auth.google')}>
             <Button
               variant='bordered'
               color='primary'
@@ -160,15 +160,13 @@ export default function Register() {
               Google
             </Button>
           </a>
-          <div className='mb-3 text-sm'>
-            <span className='text-[#777b8a] no-underline'>
-              Sudah punya akun?
-            </span>
-            <Link href={route('login')} className='text-secondary no-underline'>
-              {' '}
-              Masuk
-            </Link>
-          </div>
+        </div>
+        <div className='mx-auto text-sm'>
+          <span className='text-[#777b8a] no-underline'>Sudah punya akun?</span>
+          <Link href={route('login')} className='text-secondary no-underline'>
+            {' '}
+            Masuk
+          </Link>
         </div>
       </form>
     </GuestLayout>

@@ -137,14 +137,13 @@ export default function Login({
               </Button>
             </a>
           </div>
-
-          <div className='text-sm'>
-            <span className='text-[#777b8a]'>Belum punya akun?</span>
-            <Link href={route('register')} className='text-secondary'>
-              {' '}
-              Daftar
-            </Link>
-          </div>
+        </div>
+        <div className='mx-auto text-sm'>
+          <span className='text-[#777b8a]'>Belum punya akun?</span>
+          <Link href={route('register')} className='text-secondary'>
+            {' '}
+            Daftar
+          </Link>
         </div>
       </form>
     </GuestLayout>
