@@ -86,7 +86,14 @@ export default function Navbar() {
           <Dropdown>
             <DropdownTrigger>
               <div className='flex cursor-pointer items-center gap-2 rounded-md border border-transparent px-3 py-1 transition-colors hover:border-primary hover:bg-secondary-50'>
-                <IoPersonCircle className='h-8 w-8 text-neutral-500' />
+                {auth.user.profile_url ? (
+                  <Image
+                    src={auth.user.profile_url}
+                    className='h-8 w-8 rounded-full border border-primary'
+                  />
+                ) : (
+                  <IoPersonCircle className='h-8 w-8 text-neutral-500' />
+                )}
                 <div className='flex items-center gap-1 text-secondary'>
                   <HiMiniAcademicCap className='h-5 w-5' />
                   <p className='text-lg font-semibold'>431</p>
@@ -179,7 +186,14 @@ export default function Navbar() {
               href='/profile'
               className='flex items-center gap-2 rounded-md border border-transparent px-3 py-1 transition-colors hover:border-primary hover:bg-secondary-50'
             >
-              <IoPersonCircle className='h-10 w-10 text-neutral-500' />
+              {auth.user.profile_url ? (
+                <Image
+                  src={auth.user.profile_url}
+                  className='h-10 w-10 rounded-full'
+                />
+              ) : (
+                <IoPersonCircle className='h-10 w-10 text-neutral-500' />
+              )}
               <div className='flex flex-col'>
                 <div className='flex items-center gap-2'>
                   <p className='font-medium text-foreground-900 opacity-70'>

@@ -19,7 +19,6 @@ class OauthController extends Controller
         try {
 
             $user = Socialite::driver('google')->user();
-
             $finduser = User::where('google_id', $user->id)->orWhere('email', $user->email)->first();
 
             if($finduser){
@@ -33,7 +32,8 @@ class OauthController extends Controller
                     'name' => $user->name,
                     'email' => $user->email,
                     'google_id'=> $user->id,
-                    'password' => encrypt(str()->password(8)) // generate random password
+                    'password' => encrypt(str()->password(8)), // generate random password
+                    'profile_url' => $user->avatar
                 ]);
 
                 Auth::login($newUser);
