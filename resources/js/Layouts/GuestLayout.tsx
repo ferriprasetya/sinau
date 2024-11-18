@@ -1,4 +1,5 @@
 import { Link } from '@inertiajs/react'
+import { Image } from '@nextui-org/react'
 import { PropsWithChildren } from 'react'
 
 export default function Guest({ children }: PropsWithChildren) {
@@ -15,16 +16,14 @@ export default function Guest({ children }: PropsWithChildren) {
         alt='atas'
         className='absolute bottom-0 z-0 w-full'
       />
-      <div className='relative z-40 flex min-h-screen flex-col items-center pt-6 dark:bg-gray-900 sm:justify-center sm:pt-0'>
+      <div className='relative z-40 flex min-h-screen flex-col items-center justify-center pt-6 dark:bg-gray-900 sm:pt-0'>
         <div>
           <Link href='/'>
-            <div className="text-center font-['Barlow'] text-6xl font-bold leading-[60px] text-[#04156f]">
-              SINAU
-            </div>
+            <Image src='/images/logo.svg' className='h-16 md:h-20' alt='Logo' />
           </Link>
         </div>
 
-        <div className='mt-6 w-full overflow-hidden bg-white px-6 py-12 shadow-md dark:bg-gray-800 sm:max-w-md sm:rounded-3xl sm:px-12'>
+        <div className='mt-6 w-full max-w-2xl overflow-hidden bg-white px-6 py-6 shadow-md dark:bg-gray-800 sm:rounded-3xl sm:px-12 sm:py-12'>
           {children}
         </div>
       </div>
