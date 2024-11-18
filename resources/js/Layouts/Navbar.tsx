@@ -15,14 +15,17 @@ import {
 } from '@nextui-org/react'
 import { Button } from '@/Components/Button'
 import { AiOutlineSearch } from 'react-icons/ai'
-import { Link, usePage } from '@inertiajs/react'
+import { Link, router, usePage } from '@inertiajs/react'
 import { IoLogOut, IoPersonCircle, IoPersonSharp } from 'react-icons/io5'
 import { HiMiniAcademicCap } from 'react-icons/hi2'
+import ModalConfirm from '@/Components/ModalConfirm'
+import axios from 'axios'
 
 export default function Navbar() {
   const { auth } = usePage().props as any
   const isLogin = !!auth.user
   const [isMenuOpen, setIsMenuOpen] = React.useState(false)
+  const [isConfirmLogout, setIsConfirmLogout] = React.useState(false)
   const currentRoute = route().current()
 
   const isMenuActive = (route: string) => {
@@ -48,6 +51,13 @@ export default function Navbar() {
     },
   ]
 
+  const onLogout = async () => {
+    router.post(route('logout'))
+    await axios.post(route('logout'))
+
+    setIsConfirmLogout(false)
+  }
+
   return (
     <NextUINavbar
       onMenuOpenChange={setIsMenuOpen}
@@ -55,6 +65,14 @@ export default function Navbar() {
       isBordered
       className='border-neutral-100 bg-neutral-50'
     >
+      <ModalConfirm
+        title='Apakah anda yakin ingin keluar?'
+        confirmButtonColor='danger'
+        confirmText='Keluar'
+        isOpen={isConfirmLogout}
+        onOpenChange={setIsConfirmLogout}
+        onConfirm={onLogout}
+      />
       <NavbarContent>
         <NavbarBrand as={Link} href='/'>
           <Image src='/images/logo.svg' className='h-8 md:h-9' alt='Logo' />
@@ -123,14 +141,13 @@ export default function Navbar() {
                 className='p-0 text-danger'
                 color='danger'
               >
-                <Link
+                <div
                   className='flex items-center gap-2 px-2 py-1.5'
-                  method='post'
-                  href={route('logout')}
+                  onClick={() => setIsConfirmLogout(true)}
                 >
                   <IoLogOut className='h-5 w-5 rotate-180' />
-                  <p className='text-base font-medium'>Logout</p>
-                </Link>
+                  <p className='text-base font-medium'>Keluar</p>
+                </div>
               </DropdownItem>
             </DropdownMenu>
           </Dropdown>
@@ -210,14 +227,13 @@ export default function Navbar() {
                 </p>
               </div>
             </Link>
-            <Link
+            <div
               className='flex items-center gap-2 rounded-md px-3 py-1 text-danger hover:bg-danger-100'
-              method='post'
-              href={route('logout')}
+              onClick={() => setIsConfirmLogout(true)}
             >
               <IoLogOut className='h-5 w-5 rotate-180' />
-              <p className='text-base font-medium'>Logout</p>
-            </Link>
+              <p className='text-base font-medium'>Keluar</p>
+            </div>
           </>
         ) : (
           <>
