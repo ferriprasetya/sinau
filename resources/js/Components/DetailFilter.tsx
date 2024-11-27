@@ -1,7 +1,13 @@
-import { Button } from '@nextui-org/button'
-import { Card, CardHeader, CardBody } from '@nextui-org/card'
-import { Radio, RadioGroup } from '@nextui-org/radio'
-import { Select, SelectItem } from '@nextui-org/select'
+import {
+  Card,
+  CardHeader,
+  CardBody,
+  Radio,
+  RadioGroup,
+  Select,
+  SelectItem,
+} from '@nextui-org/react'
+import { Button } from './Button'
 export default function DetailFilter({ showFilter }: { showFilter: boolean }) {
   const educations = [
     { key: 'smp', label: 'SMP' },

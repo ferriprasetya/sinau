@@ -1,6 +1,6 @@
 import GuestLayout from '@/Layouts/GuestLayout'
 import { Head, Link, useForm } from '@inertiajs/react'
-import { FormEventHandler, useEffect, useState } from 'react'
+import { FormEventHandler, useState } from 'react'
 import { Checkbox } from '@nextui-org/react'
 import { EyeFilledIcon } from '@/Components/EyeFilledIcon'
 import { EyeSlashFilledIcon } from '@/Components/EyeSlashFilledIcon'

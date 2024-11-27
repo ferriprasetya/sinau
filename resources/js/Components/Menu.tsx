@@ -1,4 +1,4 @@
-import { Listbox, ListboxItem } from '@nextui-org/listbox'
+import { Listbox, ListboxItem } from '@nextui-org/react'
 import { FaListUl } from 'react-icons/fa6'
 import { FaArrowUp } from 'react-icons/fa'
 import { BsPersonLinesFill } from 'react-icons/bs'

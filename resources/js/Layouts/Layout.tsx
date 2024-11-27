@@ -1,5 +1,6 @@
 import React from 'react'
 import Navbar from './Navbar'
+import clsxm from '@/lib/clsxm'
 
 type LayoutProps = {
   withNavbar?: boolean
@@ -11,7 +12,7 @@ export default function Layout({
   ...attrs
 }: LayoutProps & React.HTMLAttributes<HTMLDivElement>) {
   return (
-    <div {...attrs}>
+    <div {...attrs} className={clsxm('pb-10', attrs.className)}>
       {withNavbar && <Navbar />}
       <div>{children}</div>
     </div>

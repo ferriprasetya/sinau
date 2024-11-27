@@ -1,61 +1,65 @@
+import { Button } from '@/Components/Button'
 import Filter from '@/Components/Filter'
 import Menu from '@/Components/Menu'
-import QuestionCard from '@/Components/QuestionCard'
+import EmptyState from '@/Components/EmptyState'
+import QuestionCard from '@/Components/Questions/QuestionCard'
 import Layout from '@/Layouts/Layout'
+import { mapQuestionList } from '@/services/questions/QuestionMapper'
+import { getListQuestion } from '@/services/questions/QuestionService'
+import { QuestionList, QuestionListFilter } from '@/types/question'
 import { Head } from '@inertiajs/react'
-import { Button } from '@nextui-org/button'
+import { useCallback, useEffect, useState } from 'react'
+import QuestionCardLoading from '@/Components/Questions/QuestionCardLoading'
 
-export default function Home() {
-  const cardData = [
-    {
-      title: 'How to create a new project in Laravel?',
-      categories: ['Programming', 'Coding', 'Gabut', 'Ngeteh'],
-      profileImage:
-        'https://i.pinimg.com/736x/47/b8/68/47b8687e1a612547846960c69381aaaa.jpg',
-      author: 'Ambatukam',
-      badge: '/badges/contoh1.png',
-      score: 10,
-      timestamp: '1 hour ago',
-      cardImage:
-        'https://i.pinimg.com/736x/62/7e/d6/627ed6d6af86d01d542cc2118273a429.jpg',
-      slug: 'Kak mau tanyaaa, itu cara nengahinnya gimana ya? dari kemarin proyek saya error terus',
-      answered: 1,
-      up: 10,
-      down: 1,
-    },
-    {
-      title: 'How to create a new project in Laravel?',
-      categories: ['Programming', 'Coding', 'Gabut', 'Ngeteh'],
-      profileImage:
-        'https://i.pinimg.com/736x/47/b8/68/47b8687e1a612547846960c69381aaaa.jpg',
-      author: 'Ambatukam',
-      badge: '/badges/contoh1.png',
-      score: 10,
-      timestamp: '1 hour ago',
-      cardImage:
-        'https://thumbs.dreamstime.com/b/hd-wallpapers-peacock-forest-ai-hd-wallpapers-peacock-forest-307012823.jpg',
-      slug: '/question/how-to-create-a-new-project-in-laravel',
-      answered: 1,
-      up: 10,
-      down: 1,
-    },
-    {
-      title: 'How to create a new project in Laravel?',
-      categories: ['Programming', 'Coding', 'Gabut', 'Ngeteh'],
-      profileImage:
-        'https://i.pinimg.com/736x/47/b8/68/47b8687e1a612547846960c69381aaaa.jpg',
-      author: 'Ambatukam',
-      badge: '/badges/contoh1.png',
-      score: 10,
-      timestamp: '1 hour ago',
-      cardImage:
-        'https://thumbs.dreamstime.com/b/hd-wallpapers-peacock-forest-ai-hd-wallpapers-peacock-forest-307012823.jpg',
-      slug: '/question/how-to-create-a-new-project-in-laravel',
-      answered: 1,
-      up: 10,
-      down: 1,
-    },
-  ]
+export default function Home({ questions }: any) {
+  const [listQuestion, setListQuestion] = useState<QuestionList>({
+    data: [],
+    currentPage: 1,
+    lastPage: 1,
+  })
+  const [filter, setFilter] = useState<QuestionListFilter>({
+    search: '',
+    category: null,
+    page: 1,
+  })
+  const [isLoading, setIsLoading] = useState(true)
+  const [isLoadingMore, setIsLoadingMore] = useState(false)
+
+  useEffect(() => {
+    setListQuestion(mapQuestionList(questions))
+    setIsLoading(false)
+  }, [questions])
+
+  const onGetListQuestion = useCallback(async () => {
+    const response = getListQuestion(filter)
+    response
+      .then((responseData) => {
+        setListQuestion({
+          data: [...listQuestion.data, ...responseData.data],
+          currentPage: responseData.currentPage,
+          lastPage: responseData.lastPage,
+        })
+      })
+      .finally(() => {
+        setIsLoading(false)
+        setIsLoadingMore(false)
+      })
+  }, [filter, listQuestion])
+
+  const onLoadMore = () => {
+    setIsLoadingMore(true)
+    setFilter((prev) => ({ ...prev, page: prev.page + 1 }))
+  }
+
+  useEffect(() => {
+    if (filter.search || filter.category) {
+      setIsLoading(true)
+    }
+
+    if (filter.search || filter.category || filter.page > 1) {
+      onGetListQuestion()
+    }
+  }, [filter, onGetListQuestion])
 
   return (
     <Layout>
@@ -67,27 +71,34 @@ export default function Home() {
         <div className='mx-auto md:w-2/3'>
           <div className='mt-8 flex justify-between'>
             <h1 className='text-2xl font-bold'>Semua pertanyaan</h1>
-            <Button color='primary'>Buat Pertanyaan</Button>
+            <Button>Buat Pertanyaan</Button>
           </div>
           <Filter />
-          <div className='mt-8'>
-            {cardData.map((card, index) => (
-              <QuestionCard
-                key={index}
-                title={card.title}
-                categories={card.categories}
-                profileImage={card.profileImage}
-                author={card.author}
-                badge={card.badge}
-                score={card.score}
-                timestamp={card.timestamp}
-                cardImage={card.cardImage}
-                slug={card.slug}
-                answered={card.answered}
-                up={card.up}
-                down={card.down}
-              />
-            ))}
+          <div className='mt-8 flex flex-col gap-2'>
+            {listQuestion.data?.length > 0 ? (
+              listQuestion.data.map((question) => (
+                <QuestionCard key={question.id} question={question} />
+              ))
+            ) : isLoading ? (
+              Array(3)
+                .fill('')
+                .map((_, index) => (
+                  <QuestionCardLoading key={`loading-question-${index}`} />
+                ))
+            ) : (
+              <EmptyState isFilter={!!(filter.search || filter.category)} />
+            )}
+            {listQuestion.currentPage < listQuestion.lastPage && (
+              <Button
+                variant='bordered'
+                color='primary'
+                className='mx-auto'
+                onClick={onLoadMore}
+                isLoading={isLoadingMore}
+              >
+                Tampilkan lebih banyak
+              </Button>
+            )}
           </div>
         </div>
       </div>

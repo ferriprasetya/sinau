@@ -2,6 +2,7 @@ import * as React from 'react'
 
 import clsxm from '@/lib/clsxm'
 
+/* eslint-disable */
 export enum TypographyVariant {
   h4,
   h5,
@@ -24,6 +25,7 @@ enum FontWeight {
   medium,
   regular,
 }
+/* eslint-enable */
 
 type TypographyProps<T extends React.ElementType> = {
   as?: T

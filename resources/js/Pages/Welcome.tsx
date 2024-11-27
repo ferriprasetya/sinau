@@ -1,6 +1,5 @@
 import { PageProps } from '@/types'
 import { Head, Link } from '@inertiajs/react'
-import { Button } from '@nextui-org/react'
 
 export default function Welcome({
   auth,
@@ -256,7 +255,7 @@ export default function Welcome({
                     </h2>
 
                     <p className='mt-4 text-sm/relaxed'>
-                      Laravel's robust library of first-party tools and
+                      Laravel&apos;s robust library of first-party tools and
                       libraries, such as{' '}
                       <a
                         href='https://forge.laravel.com'

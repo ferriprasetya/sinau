@@ -24,9 +24,16 @@ module.exports = {
   plugins: ['prettier', '@typescript-eslint', 'react', 'react-hooks'],
   rules: {
     // JavaScript rules
-    'prefer-const': 'warn',
-    'no-var': 'warn',
-    'no-unused-vars': 'warn',
+    'prefer-const': 'error',
+    'no-var': 'error',
+    '@typescript-eslint/no-unused-vars': [
+      'error',
+      {
+        argsIgnorePattern: '^_', // Ignore unused parameters prefixed with '_'
+        varsIgnorePattern: '^_', // Ignore unused variables prefixed with '_'
+        ignoreRestSiblings: true,
+      },
+    ],
     'object-shorthand': 'warn',
     'quote-props': ['warn', 'as-needed'],
     // TypeScript rules
@@ -56,6 +63,7 @@ module.exports = {
     'react/react-in-jsx-scope': 'off',
     'react/prop-types': 'off',
     'prettier/prettier': 'warn',
+    '@typescript-eslint/no-explicit-any': 'off',
   },
   settings: {
     react: {

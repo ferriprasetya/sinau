@@ -1,4 +1,4 @@
-import { Button, ButtonGroup } from '@nextui-org/button'
+import { Button, ButtonGroup } from '@nextui-org/react'
 import { IoFilter } from 'react-icons/io5'
 import DetailFilter from './DetailFilter'
 import { useState } from 'react'

@@ -1,5 +1,10 @@
-import { Card, CardHeader, CardBody, CardFooter } from '@nextui-org/card'
-import { Image } from '@nextui-org/react'
+import {
+  Card,
+  CardHeader,
+  CardBody,
+  CardFooter,
+  Image,
+} from '@nextui-org/react'
 import { FaArrowDown, FaArrowUp } from 'react-icons/fa'
 import { FaBrain, FaCheck } from 'react-icons/fa6'
 import Typography from './Typography'
