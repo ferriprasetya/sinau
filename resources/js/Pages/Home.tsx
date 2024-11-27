@@ -34,17 +34,17 @@ export default function Home({ questions }: any) {
     const response = getListQuestion(filter)
     response
       .then((responseData) => {
-        setListQuestion({
-          data: [...listQuestion.data, ...responseData.data],
+        setListQuestion((prev) => ({
+          data: [...prev.data, ...responseData.data],
           currentPage: responseData.currentPage,
           lastPage: responseData.lastPage,
-        })
+        }))
       })
       .finally(() => {
         setIsLoading(false)
         setIsLoadingMore(false)
       })
-  }, [filter, listQuestion])
+  }, [filter])
 
   const onLoadMore = () => {
     setIsLoadingMore(true)

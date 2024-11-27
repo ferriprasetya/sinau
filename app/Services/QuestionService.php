@@ -22,7 +22,7 @@ class QuestionService
         }
 
         // pagination
-        $questions = $questions->paginate(perPage: 2, page: $request->page ?? 1);
+        $questions = $questions->paginate(perPage: 10, page: $request->page ?? 1);
 
         return [
             'data' => $questions->items() ?? [],
