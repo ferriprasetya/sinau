@@ -114,7 +114,7 @@ export default function Navbar() {
                 )}
                 <div className='flex items-center gap-1 text-secondary'>
                   <HiMiniAcademicCap className='h-5 w-5' />
-                  <p className='text-lg font-semibold'>431</p>
+                  <p className='text-lg font-semibold'>{auth.user.point}</p>
                 </div>
               </div>
             </DropdownTrigger>
@@ -219,7 +219,7 @@ export default function Navbar() {
 
                   <div className='flex items-center gap-1 text-secondary'>
                     <HiMiniAcademicCap className='h-5 w-5' />
-                    <p className='text-lg font-semibold'>431</p>
+                    <p className='text-lg font-semibold'>{auth.user.point}</p>
                   </div>
                 </div>
                 <p className='-mt-1 font-medium text-neutral-500'>

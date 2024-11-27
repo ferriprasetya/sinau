@@ -1,11 +1,15 @@
-import { Card, CardHeader, CardBody, CardFooter } from '@nextui-org/card'
+import {
+  Card,
+  CardHeader,
+  CardBody,
+  CardFooter,
+  Textarea,
+} from '@nextui-org/react'
 import Typography from './Typography'
-
-import { Textarea } from '@nextui-org/input'
 import { Button } from './Button'
 
 interface AnsweringCardProps {
-  setIsAnswerQuestion: (value: boolean) => void
+  setIsAnswerQuestion: (_value: boolean) => void
 }
 export default function AnsweringCard({
   setIsAnswerQuestion,

@@ -1,10 +1,14 @@
 import Layout from '@/Layouts/Layout'
 import { Head, Link } from '@inertiajs/react'
-import { Breadcrumbs, BreadcrumbItem } from '@nextui-org/breadcrumbs'
+import {
+  Breadcrumbs,
+  BreadcrumbItem,
+  Select,
+  SelectItem,
+} from '@nextui-org/react'
 import { Button } from '@/Components/Button'
-import QuestionCardDetail from '@/Components/QuestionCardDetail'
+import QuestionCardDetail from '@/Components/Questions/QuestionCardDetail'
 import Typography from '@/Components/Typography'
-import { Select, SelectItem } from '@nextui-org/select'
 import AnswerCard from '@/Components/AnswerCard'
 import AnsweringCard from '@/Components/AnsweringCard'
 import { useState } from 'react'

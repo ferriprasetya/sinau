@@ -1,7 +1,7 @@
 export type ModalData = {
   isOpen: boolean
   title: string
-  onOpenChange: (open: boolean) => void
+  onOpenChange: (_open: boolean) => void
   content?: string
   confirmText?: string
   cancelText?: string
