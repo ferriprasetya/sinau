@@ -67,4 +67,9 @@ class User extends Authenticatable
     {
         return $this->belongsTo(Badge::class);
     }
+
+    public function answers()
+    {
+        return $this->hasMany(Answer::class);
+    }
 }

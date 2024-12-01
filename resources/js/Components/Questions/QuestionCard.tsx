@@ -5,7 +5,12 @@ import {
   CardFooter,
   Image,
 } from '@nextui-org/react'
-import { FaArrowDown, FaArrowUp, FaQuestion } from 'react-icons/fa'
+import {
+  FaArrowDown,
+  FaArrowUp,
+  FaCheckCircle,
+  FaQuestion,
+} from 'react-icons/fa'
 import CardCategory from '../CardCategory'
 import { Link } from '@inertiajs/react'
 import { Question } from '@/types/question'
@@ -29,7 +34,7 @@ export default function QuestionCard({
     imageUrl,
     upvote,
     downvote,
-    answers,
+    totalAnswer,
   },
 }: QuestionCardProps) {
   return (
@@ -102,9 +107,17 @@ export default function QuestionCard({
         </CardBody>
       </Link>
       <CardFooter className='mt-3 flex items-center justify-between rounded-3xl bg-neutral-50 px-2 py-2'>
-        <button className='ml-4 text-sm font-medium text-neutral-700'>
-          {answers?.length ?? 0} Jawaban
-        </button>
+        <div
+          className={clsxm(
+            'ml-4 flex items-center justify-center gap-1 text-sm',
+            isCorrect
+              ? 'font-semibold text-success-700'
+              : 'font-medium text-neutral-700',
+          )}
+        >
+          {isCorrect && <FaCheckCircle />}
+          <p>{totalAnswer ?? 0} Jawaban</p>
+        </div>
         <div className='flex items-center'>
           <button className='mr-2 flex items-center rounded-xl bg-primary-50 px-2 py-1'>
             <FaArrowUp className='h-3 fill-primary-500' />

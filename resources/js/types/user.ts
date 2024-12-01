@@ -2,10 +2,10 @@ export type User = {
   id: string
   name: string
   email: string
-  googleId: string
-  createdAt: string
-  updatedAt: string
   point: number
+  googleId?: string
+  createdAt?: string
+  updatedAt?: string
   emailVerifiedAt?: string
   gender?: string
   dateOfBirth?: string

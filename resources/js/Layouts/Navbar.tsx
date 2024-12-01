@@ -35,11 +35,6 @@ export default function Navbar() {
 
   const menuItems = [
     {
-      label: 'Beranda',
-      href: '/',
-      route: 'home',
-    },
-    {
       label: 'Pertanyaan',
       href: '/pertanyaan',
       route: 'question.index',
@@ -52,10 +47,10 @@ export default function Navbar() {
   ]
 
   const onLogout = async () => {
-    router.post(route('logout'))
     await axios.post(route('logout'))
 
     setIsConfirmLogout(false)
+    router.reload()
   }
 
   return (

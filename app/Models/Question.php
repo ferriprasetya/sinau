@@ -32,21 +32,6 @@ class Question extends Model
         'is_correct' => 'boolean',
     ];
 
-    public function user()
-    {
-        return $this->belongsTo(User::class);
-    }
-
-    public function category()
-    {
-        return $this->belongsToMany(Category::class, 'question_categories');
-    }
-
-    public function upvotes()
-    {
-        return $this->hasMany(UpvoteQuestion::class);
-    }
-
     protected function title(): Attribute
     {
         return Attribute::make(
@@ -56,5 +41,25 @@ class Question extends Model
                 'slug' => Str::slug($value)
             ]
         );
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    public function categories()
+    {
+        return $this->belongsToMany(Category::class, 'question_categories');
+    }
+
+    public function upvotes()
+    {
+        return $this->hasMany(UpvoteQuestion::class);
+    }
+
+    public function answers()
+    {
+        return $this->hasMany(Answer::class);
     }
 }

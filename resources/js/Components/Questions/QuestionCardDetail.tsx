@@ -9,85 +9,75 @@ import { useState } from 'react'
 import { FaArrowDown, FaArrowUp } from 'react-icons/fa'
 import { FaPenToSquare } from 'react-icons/fa6'
 import Typography from '../Typography'
+import { Question } from '@/types/question'
+import { IoPersonCircle } from 'react-icons/io5'
+import { HiMiniAcademicCap } from 'react-icons/hi2'
 
 interface QuestionCardProps {
-  key: number
-  title: string
-  profileImage?: string
-  author: string
-  badge: string
-  score: number
-  timestamp: string
-  cardImage?: string
-  text: string
-  answered: number
-  up: number
-  down: number
+  question: Question
 }
 
 export default function QuestionCardDetail({
-  key,
-  title,
-  profileImage,
-  author,
-  badge,
-  score,
-  timestamp,
-  cardImage,
-  text,
-  up,
-  down,
+  question: { title, user, content, createdAt, imageUrl, upvote, downvote },
 }: QuestionCardProps) {
   const [isReadMore, setIsReadMore] = useState(false)
   const toggleReadMore = () => {
     setIsReadMore(!isReadMore)
   }
   return (
-    <Card key={key} className='relative mb-6 px-5 py-4'>
+    <Card className='relative mb-6 px-5 py-4'>
       <CardHeader className='flex-col items-start px-4 pb-0 pt-2'>
         <h1 className='text-lg font-semibold text-foreground-500 md:text-2xl'>
           {title}
         </h1>
         <div className='my-4 flex items-center'>
           <div className='mr-3'>
-            <Image
-              src={profileImage}
-              className='h-9 w-9 rounded-full object-cover'
-            />
+            {user.profileUrl ? (
+              <Image
+                src={user.profileUrl}
+                className='h-9 w-9 rounded-full object-cover'
+              />
+            ) : (
+              <IoPersonCircle className='h-9 w-9 text-neutral-500' />
+            )}
           </div>
           <div>
-            <div className='flex items-center'>
+            <div className='flex items-center gap-1'>
               <h2 className='text-medium font-semibold text-foreground-500 md:text-lg'>
-                {author}
+                {user.name}
               </h2>
-              <Image src={badge} className='h-5 w-5' />
-              <span className='text-medium font-medium text-secondary-500 md:text-lg'>
-                {score}
+              {user.badge?.imageUrl ? (
+                <Image src={user.badge.imageUrl} className='h-5 w-5' />
+              ) : (
+                <HiMiniAcademicCap className='h-5 w-5 text-secondary' />
+              )}
+              <span className='text-medium font-medium text-secondary md:text-lg'>
+                {user.point}
               </span>
             </div>
             <span className='text-xs font-normal text-neutral-600 md:text-sm'>
-              {timestamp}
+              {createdAt}
             </span>
           </div>
         </div>
       </CardHeader>
       <CardBody className='overflow-hidden py-2 md:flex'>
         <div className='flex flex-col'>
-          {cardImage && (
+          {imageUrl && (
             <div className='mb-3 h-52 overflow-hidden'>
               <img
                 alt='Card background'
                 className='h-52 w-auto rounded object-cover'
-                src={cardImage}
+                src={imageUrl}
                 height={256}
               />
             </div>
           )}
           <div className=''>
             <p className='text-lg'>
-              {text.length > 300 && !isReadMore ? (
+              {content.length > 300 && !isReadMore ? (
                 <>
-                  {text.slice(0, 300)}...
+                  {content.slice(0, 300)}...
                   <br />
                   <Typography
                     onClick={() => toggleReadMore()}
@@ -100,7 +90,7 @@ export default function QuestionCardDetail({
                 </>
               ) : (
                 <Typography variant='bl' weight='regular'>
-                  {text}
+                  {content}
                 </Typography>
               )}
             </p>
@@ -116,7 +106,7 @@ export default function QuestionCardDetail({
               |{' '}
             </span>
             <span className='text-xs font-medium text-neutral-600 md:text-sm'>
-              {up}
+              {upvote}
             </span>
           </button>
           <button className='flex items-center rounded-xl bg-foreground-50 px-2 py-1'>
@@ -125,7 +115,7 @@ export default function QuestionCardDetail({
               |{' '}
             </span>
             <span className='text-xs font-medium text-neutral-600 md:text-sm'>
-              {down}
+              {downvote}
             </span>
           </button>
         </div>
