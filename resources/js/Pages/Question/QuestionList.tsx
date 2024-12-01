@@ -11,7 +11,7 @@ import { Head } from '@inertiajs/react'
 import { useCallback, useEffect, useState } from 'react'
 import QuestionCardLoading from '@/Components/Questions/QuestionCardLoading'
 
-export default function Home({ questions }: any) {
+export default function QuestionListPage({ questions }: any) {
   const [listQuestion, setListQuestion] = useState<QuestionList>({
     data: [],
     currentPage: 1,

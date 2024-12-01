@@ -11,34 +11,22 @@ import Typography from './Typography'
 
 import { PiWarningCircleFill } from 'react-icons/pi'
 import { useState } from 'react'
+import { Answer } from '@/types/question'
+import clsxm from '@/lib/clsxm'
+import { IoPersonCircle } from 'react-icons/io5'
+import { HiMiniAcademicCap } from 'react-icons/hi2'
 
 interface AnswerCardProps {
-  key: number
-  profileImage?: string
-  author: string
-  badge: string
-  score: number
-  timestamp: string
-  cardImage?: string
-  text: string
-  answered: number
-  up: number
-  down: number
-  condition: string
+  answer: Answer
+  ableToCorrect?: boolean
+  markAsCorrect?: (_answer: Answer) => void
 }
 
 export default function AnswerCard({
-  key,
-  profileImage,
-  author,
-  badge,
-  score,
-  timestamp,
-  cardImage,
-  text,
-  up,
-  down,
-  condition,
+  answer: { content, upvote, downvote, isCorrect, createdAt, user },
+  answer,
+  ableToCorrect = false,
+  markAsCorrect = () => {},
 }: AnswerCardProps) {
   const [isReadMore, setIsReadMore] = useState(false)
   const toggleReadMore = () => {
@@ -47,11 +35,17 @@ export default function AnswerCard({
 
   return (
     <Card
-      key={key}
-      className={`${condition == 'verified' ? `border-success-500` : condition == 'AI' ? 'border-primary-500' : 'border-neutral-500'} relative mb-6 border px-5 py-4`}
+      className={clsxm(
+        'relative mb-6 border px-5 py-4',
+        isCorrect
+          ? `border-success-500`
+          : !user?.id
+            ? 'border-primary-500'
+            : 'border-neutral-500',
+      )}
     >
       <CardHeader className='flex-col items-start px-4 pb-0 pt-2'>
-        {condition === 'AI' ? (
+        {!user?.id ? (
           <>
             <div className='absolute right-6 top-0 rounded-b-xl bg-primary-500 px-3 py-4 md:px-4 md:py-5'>
               <FaBrain className='h-6 w-6 fill-primary-50' />
@@ -82,34 +76,53 @@ export default function AnswerCard({
           </>
         ) : (
           <>
-            {condition === 'verified' ? (
-              <div className='absolute right-6 top-0 rounded-b-xl bg-success-500 px-3 py-4 md:px-4 md:py-5'>
+            {isCorrect ? (
+              <div
+                className={clsxm(
+                  'absolute right-6 top-0 z-10 rounded-b-xl bg-success-500 px-3 py-4 md:px-4 md:py-5',
+                  ableToCorrect && 'cursor-pointer hover:bg-success-700',
+                )}
+                onClick={() => ableToCorrect && markAsCorrect(answer)}
+              >
                 <FaCheck className='h-6 w-6 fill-success-50' />
               </div>
             ) : (
-              <div className='absolute right-6 top-0 rounded-b-xl border-x border-y border-neutral-400 bg-transparent px-3 py-4 md:px-4 md:py-5'>
-                <FaCheck className='h-6 w-6 fill-neutral-600' />
-              </div>
+              ableToCorrect && (
+                <div
+                  className='absolute right-6 top-0 z-10 cursor-pointer rounded-b-xl border-x border-b border-neutral-400 bg-transparent px-3 py-4 hover:bg-neutral-100 md:px-4 md:py-5'
+                  onClick={() => markAsCorrect(answer)}
+                >
+                  <FaCheck className='h-6 w-6 fill-neutral-600' />
+                </div>
+              )
             )}
             <div className='my-4 flex items-center'>
               <div className='mr-3'>
-                <Image
-                  src={profileImage}
-                  className='h-9 w-9 rounded-full object-cover'
-                />
+                {user.profileUrl ? (
+                  <Image
+                    src={user.profileUrl}
+                    className='h-9 w-9 rounded-full object-cover'
+                  />
+                ) : (
+                  <IoPersonCircle className='h-9 w-9 text-neutral-500' />
+                )}
               </div>
               <div>
-                <div className='flex items-center'>
+                <div className='flex items-center gap-1'>
                   <h2 className='text-medium font-semibold text-foreground-500 md:text-lg'>
-                    {author}
+                    {user.name}
                   </h2>
-                  <Image src={badge} className='h-5 w-5' />
-                  <span className='text-medium font-medium text-secondary-500 md:text-lg'>
-                    {score}
+                  {user.badge?.imageUrl ? (
+                    <Image src={user.badge.imageUrl} className='h-5 w-5' />
+                  ) : (
+                    <HiMiniAcademicCap className='h-5 w-5 text-secondary' />
+                  )}
+                  <span className='text-medium font-medium text-secondary md:text-lg'>
+                    {user.point}
                   </span>
                 </div>
                 <span className='text-xs font-normal text-neutral-600 md:text-sm'>
-                  {timestamp}
+                  {createdAt}
                 </span>
               </div>
             </div>
@@ -118,7 +131,7 @@ export default function AnswerCard({
       </CardHeader>
       <CardBody className='overflow-hidden pb-6 md:flex'>
         <div className='flex flex-col'>
-          {cardImage && (
+          {/* {cardImage && (
             <div className='mb-3 h-52 overflow-hidden'>
               <img
                 alt='Card background'
@@ -127,25 +140,27 @@ export default function AnswerCard({
                 height={256}
               />
             </div>
-          )}
+          )} */}
           <div className=''>
             <p className='text-lg md:text-medium'>
-              {text.length > 300 && !isReadMore ? (
+              {content.length > 300 && !isReadMore ? (
                 <>
-                  {text.slice(0, 300)}...
+                  <Typography variant='bl' weight='regular'>
+                    {content.slice(0, 300)}...
+                  </Typography>
                   <br />
                   <Typography
                     onClick={() => toggleReadMore()}
                     variant='bl'
                     weight='regular'
-                    className='text-primary-500'
+                    className='cursor-pointer text-primary-500'
                   >
                     Baca Selengkapnya
                   </Typography>
                 </>
               ) : (
                 <Typography variant='bl' weight='regular'>
-                  {text}
+                  {content}
                 </Typography>
               )}
             </p>
@@ -161,7 +176,7 @@ export default function AnswerCard({
               |{' '}
             </span>
             <span className='text-xs font-medium text-neutral-600 md:text-sm'>
-              {up}
+              {upvote}
             </span>
           </button>
           <button className='flex items-center rounded-xl bg-foreground-50 px-2 py-1'>
@@ -170,7 +185,7 @@ export default function AnswerCard({
               |{' '}
             </span>
             <span className='text-xs font-medium text-neutral-600 md:text-sm'>
-              {down}
+              {downvote}
             </span>
           </button>
         </div>

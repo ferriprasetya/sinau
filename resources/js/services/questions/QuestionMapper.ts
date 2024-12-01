@@ -1,4 +1,4 @@
-import { Question, QuestionList } from '@/types/question'
+import { Answer, Question, QuestionList } from '@/types/question'
 import dayjs from 'dayjs'
 
 export function mapQuestionList(response: any): QuestionList {
@@ -23,14 +23,7 @@ export function mapQuestionList(response: any): QuestionList {
               id: item.user.id,
               name: item.user.name,
               email: item.user.email,
-              emailVerifiedAt: item.user.email_verified_at,
-              gender: item.user.gender,
-              dateOfBirth: item.user.date_of_birth,
-              school: item.user.school,
               profileUrl: item.user.profile_url,
-              googleId: item.user.google_id,
-              createdAt: item.user.created_at,
-              updatedAt: item.user.updated_at,
               badgeId: item.user.badge_id,
               point: item.user.point,
               badge: {
@@ -40,20 +33,79 @@ export function mapQuestionList(response: any): QuestionList {
                 slug: item.user.badge?.slug,
               },
             },
-            categories: item.category.map((cat: any) => ({
+            categories: item.categories.map((cat: any) => ({
               id: cat.id,
               slug: cat.slug,
               label: cat.label,
-              createdBy: cat.created_by,
-              createdAt: cat.created_at,
-              updatedAt: cat.updated_at,
-              pivot: {
-                questionId: cat.pivot.question_id,
-                categoryId: cat.pivot.category_id,
-              },
             })),
+            totalAnswer: item.answers_count,
           }),
         )
       : [],
   }
+}
+
+export function mapQuestionDetail(response: any): Question {
+  return {
+    id: response.id,
+    userId: response.user_id,
+    title: response.title,
+    slug: response.slug,
+    upvote: response.upvote,
+    downvote: response.downvote,
+    imageUrl: response.image_url,
+    content: response.content,
+    isCorrect: response.is_correct,
+    createdAt: dayjs(response.created_at).fromNow(true) + ' yang lalu',
+    updatedAt: dayjs(response.updated_at).fromNow(true) + ' yang lalu',
+    user: {
+      id: response.user.id,
+      name: response.user.name,
+      email: response.user.email,
+      profileUrl: response.user.profile_url,
+      point: response.user.point,
+      badge: {
+        id: response.user.badge?.id,
+        label: response.user.badge?.label,
+        imageUrl: response.user.badge?.image_url,
+        slug: response.user.badge?.slug,
+      },
+    },
+    categories: response.categories.map((cat: any) => ({
+      id: cat.id,
+      slug: cat.slug,
+      label: cat.label,
+    })),
+  }
+}
+
+export function mapQuestionAnswers(response: any): Answer[] {
+  return response?.length
+    ? response.map(
+        (item: any): Answer => ({
+          id: item.id,
+          userId: item.user_id,
+          content: item.content,
+          createdAt: dayjs(item.created_at).fromNow(true) + ' yang lalu',
+          updatedAt: item.updated_at,
+          upvote: item.upvote,
+          downvote: item.downvote,
+          isCorrect: item.is_correct,
+          questionId: item.question_id,
+          user: {
+            id: item.user.id,
+            name: item.user.name,
+            email: item.user.email,
+            profileUrl: item.user.profile_url,
+            point: item.user.point,
+            badge: {
+              id: item.user.badge?.id,
+              label: item.user.badge?.label,
+              imageUrl: item.user.badge?.image_url,
+              slug: item.user.badge?.slug,
+            },
+          },
+        }),
+      )
+    : []
 }

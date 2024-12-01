@@ -15,7 +15,7 @@ export type Question = {
   updatedAt: string
   user: User
   categories: Category[]
-  answers?: any[]
+  totalAnswer?: number
 }
 
 export type QuestionListFilter = {
@@ -28,4 +28,23 @@ export type QuestionList = {
   data: Question[]
   currentPage: number
   lastPage: number
+}
+
+export type AnswerQuestionRequest = {
+  userId: string
+  questionId: string
+  content: string
+}
+
+export type Answer = {
+  id: number
+  userId: string
+  content: string
+  upvote: number
+  downvote: number
+  isCorrect: number
+  questionId: string
+  createdAt: string
+  updatedAt: string
+  user?: User
 }

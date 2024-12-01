@@ -1,5 +1,5 @@
 import GuestLayout from '@/Layouts/GuestLayout'
-import { Head, Link, useForm } from '@inertiajs/react'
+import { Head, Link, router, useForm } from '@inertiajs/react'
 import { FormEventHandler, useState } from 'react'
 import { Checkbox } from '@nextui-org/react'
 import { EyeFilledIcon } from '@/Components/EyeFilledIcon'
@@ -15,7 +15,8 @@ export default function Login({
   status?: string
   canResetPassword: boolean
 }) {
-  const { data, setData, post, processing, errors, reset } = useForm({
+  const querySearch = window.location.search
+  const { data, setData, post, processing, errors } = useForm({
     email: '',
     password: '',
     remember: false,
@@ -25,8 +26,20 @@ export default function Login({
     e.preventDefault()
 
     post(route('login'), {
-      onFinish: () => reset('password'),
+      onSuccess: () => {
+        if (querySearch) {
+          handleRedirectTo()
+        }
+      },
     })
+  }
+
+  const handleRedirectTo = () => {
+    const path = new URLSearchParams(querySearch).get('redirectTo')
+
+    if (path) {
+      router.visit(decodeURIComponent(path))
+    }
   }
 
   const [isVisible, setIsVisible] = useState(false)
@@ -112,6 +125,7 @@ export default function Login({
             <Button
               color='primaryGradient'
               className='w-full text-lg font-medium'
+              type='submit'
               isLoading={processing}
               onClick={submit}
             >
