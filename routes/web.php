@@ -13,6 +13,10 @@ Route::get('/', function () {
     return to_route('question.index');
 })->name('home');
 
+Route::get('/makequestion', function () {
+    return Inertia::render('MakeQuestion');
+})->name('makequestion');
+
 // Route::get('/', function () {
 //     return Inertia::render('DetailAnswer');
 // })->name('DetailAnswer');
