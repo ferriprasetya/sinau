@@ -16,4 +16,5 @@ return [
     'failed' => 'Kombinasi kredensial tersebut tidak sesuai dengan data kami.',
     'password' => 'Kata sandi yang diberikan salah.',
     'throttle' => 'Terlalu banyak upaya login. Silahkan coba lagi dalam :seconds detik.',
+    'Unauthenticated' => 'Anda harus login terlebih dahulu',
 ];
