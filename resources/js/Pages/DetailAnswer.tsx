@@ -1,5 +1,5 @@
 import Layout from '@/Layouts/Layout'
-import { Head, Link, router, usePage } from '@inertiajs/react'
+import { Head, Link, router, useForm, usePage } from '@inertiajs/react'
 import {
   Breadcrumbs,
   BreadcrumbItem,
@@ -16,22 +16,16 @@ import {
   mapQuestionAnswers,
   mapQuestionDetail,
 } from '@/services/questions/QuestionMapper'
-import {
-  getQuestionAnswers,
-  markAnswerAsCorrect,
-  removeAnswerAsCorrect,
-  submitAnswerQuestion,
-} from '@/services/questions/QuestionService'
+import { getQuestionAnswers } from '@/services/questions/QuestionService'
 import ModalConfirm from '@/Components/ModalConfirm'
 import { Answer } from '@/types/question'
-function DetailAnswer({ question }: any) {
+import convertObjectCamelToSnakeCase from '@/lib/convertObjectCamelToSnakeCase'
+function DetailAnswer({ question, answers }: any) {
   const { auth } = usePage().props as any
   const isLogin = !!auth.user
   const userId = auth.user?.id
   const [questionData, _setQuestionData] = useState(mapQuestionDetail(question))
-  const [answersData, setAnswersData] = useState(
-    mapQuestionAnswers(question?.answers),
-  )
+  const [answersData, setAnswersData] = useState(mapQuestionAnswers(answers))
 
   const sortAAnswers = [
     {
@@ -61,24 +55,35 @@ function DetailAnswer({ question }: any) {
     setIsAnswerQuestion(!isAnswerQuestion)
   }
 
-  const [answerContent, setAnswerContent] = useState('')
+  const {
+    data: answerRequest,
+    setData: setAnswerRequest,
+    post: submitAnswer,
+    processing: isLoadingSubmitAnswer,
+    transform: transformAnswerRequest,
+    reset: resetAnswerRequest,
+  } = useForm({
+    userId,
+    questionId: questionData.id,
+    content: '',
+  })
 
-  const [isLoadingSubmitAnswer, setIsLoadingSubmitAnswer] = useState(false)
-  const onSubmitAnswer = async () => {
-    setIsLoadingSubmitAnswer(true)
-
-    await submitAnswerQuestion({
-      userId,
-      questionId: questionData.id,
-      content: answerContent,
+  const onSubmitAnswer = () => {
+    transformAnswerRequest((data) => {
+      return convertObjectCamelToSnakeCase(data)
     })
-
-    setIsLoadingSubmitAnswer(false)
-    toggleAnswerQuestion()
-    onGetListAnswer()
+    submitAnswer(route('question.answer'), {
+      preserveScroll: true,
+      onFinish: () => {
+        toggleAnswerQuestion()
+        resetAnswerRequest()
+        onGetListAnswer()
+      },
+    })
   }
 
   const [isConfirmLogin, setIsConfirmLogin] = useState(false)
+
   const toggleConfirmLogin = () => {
     setIsConfirmLogin(!isConfirmLogin)
   }
@@ -94,6 +99,7 @@ function DetailAnswer({ question }: any) {
     setIsLoadingAnswers(false)
   }
 
+  const { patch: submitMarkAnswer } = useForm()
   const markAsCorrectAnswer = (answer: Answer) => {
     if (answer.isCorrect) {
       onRemoveAsCorrectAnswer(answer.id)
@@ -102,13 +108,15 @@ function DetailAnswer({ question }: any) {
     onMarkAsCorrectAnswer(answer.id)
   }
 
-  const onMarkAsCorrectAnswer = async (answerId: number) => {
-    await markAnswerAsCorrect(answerId)
-    await onGetListAnswer()
+  const onMarkAsCorrectAnswer = (answerId: number) => {
+    submitMarkAnswer(route('question.answer.correct', answerId), {
+      onFinish: () => onGetListAnswer(),
+    })
   }
-  const onRemoveAsCorrectAnswer = async (answerId: number) => {
-    await removeAnswerAsCorrect(answerId)
-    await onGetListAnswer()
+  const onRemoveAsCorrectAnswer = (answerId: number) => {
+    submitMarkAnswer(route('question.answer.removeCorrect', answerId), {
+      onFinish: () => onGetListAnswer(),
+    })
   }
 
   return (
@@ -168,8 +176,8 @@ function DetailAnswer({ question }: any) {
           </div>
           {isAnswerQuestion && (
             <AnsweringCard
-              content={answerContent}
-              setContent={setAnswerContent}
+              content={answerRequest.content}
+              setContent={(content) => setAnswerRequest('content', content)}
               onCancel={() => setIsAnswerQuestion(false)}
               onSubmit={onSubmitAnswer}
               loadingSubmit={isLoadingSubmitAnswer}

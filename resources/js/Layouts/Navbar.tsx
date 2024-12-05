@@ -30,19 +30,19 @@ export default function Navbar() {
 
   const isMenuActive = (route: string) => {
     if (!currentRoute) return false
-    return route.includes(currentRoute)
+    return currentRoute.includes(route)
   }
 
   const menuItems = [
     {
       label: 'Pertanyaan',
-      href: '/pertanyaan',
-      route: 'question.index',
+      href: '/question',
+      route: 'question',
     },
     {
       label: 'Pengetahuan',
-      href: '/pengetahuan',
-      route: 'knowledge.index',
+      href: '/knowledge',
+      route: 'knowledge',
     },
   ]
 

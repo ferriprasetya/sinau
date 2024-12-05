@@ -12,17 +12,4 @@ Route::group(['prefix' => 'questions'], function () {
         '{questionId}/answers',
         [QuestionApiController::class, 'getQuestionAnswers']
     )->name('question.api.answers');
-
-    Route::post(
-        '/answer',
-        [QuestionApiController::class, 'createAnswer']
-    )->name('question.api.answer');
-    Route::patch(
-        '/answer/{answerId}/correct',
-        [QuestionApiController::class, 'markCorrectAnswer']
-    )->name('question.api.answer.correct');
-    Route::patch(
-        '/answer/{answerId}/removeCorrect',
-        [QuestionApiController::class, 'removeAsCorrectAnswer']
-    )->name('question.api.answer.removeCorrect');
 });

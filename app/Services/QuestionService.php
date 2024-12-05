@@ -2,7 +2,9 @@
 
 namespace App\Services;
 
+use App\Http\Requests\Question\CreateQuestionRequest;
 use App\Models\Answer;
+use App\Models\Category;
 use App\Models\Question;
 use Illuminate\Http\Request;
 
@@ -34,7 +36,7 @@ class QuestionService
 
     public function getQuestionBySlug(string $slug): array|object
     {
-        $question = Question::with('user.badge', 'categories', 'answers.user')
+        $question = Question::with('user.badge', 'categories')
             ->where('slug', $slug)
             ->firstOrFail();
 
@@ -60,5 +62,41 @@ class QuestionService
             ->get();
 
         return $answers;
+    }
+
+    public function store(CreateQuestionRequest $request)
+    {
+        $validated = $request->validated();
+        $question = Question::create([
+            'user_id' => $validated['user_id'],
+            'title' => $validated['title'],
+            'content' => $validated['content'],
+            'image_url' => $validated['image_url'] ?? null,
+            'education_id' => $validated['education_id'] ?? null,
+            ]);
+
+        // Handle categories
+        if (isset($validated['categories'])) {
+            $categoryIds = collect($validated['categories'])->map(function ($category) {
+                // Check if the category exists
+                $existingCategory = Category::find($category['id']);
+
+                if ($existingCategory) {
+                    return $existingCategory->id; // Return the existing category ID
+                }
+
+                // Create a new category if it does not exist
+                $newCategory = Category::create([
+                    'label' => $category['label'],
+                ]);
+
+                return $newCategory->id; // Return the new category ID
+            });
+
+            // Attach the categories to the question
+            $question->categories()->attach($categoryIds);
+        }
+
+        return $question;
     }
 }

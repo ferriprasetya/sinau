@@ -3,6 +3,8 @@ return [
   'attributes' => [
     'content' => 'Konten',
     'title' => 'Judul',
+    'categories' => 'Kategori',
+    'category' => 'Kategori',
   ],
 
   'min' => [

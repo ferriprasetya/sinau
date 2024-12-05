@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Question\CreateAnswerRequest;
+use App\Http\Requests\Question\CreateQuestionRequest;
 use App\Services\AnswerService;
 use App\Services\QuestionService;
 use Illuminate\Http\Request;
@@ -64,14 +65,12 @@ class QuestionApiController extends Controller
                 'message' => __('question.answer.store.success'),
                 'data' => $answer
             ], 201);
-        } catch (Throwable $th) {
+        } catch (Throwable) {
             DB::rollBack();
             return response()->json([
-                // 'message' => __('question.answer.store.failed'),
-                'message' => $th->getMessage(),
+                'message' => __('question.answer.store.failed'),
             ], 400);
         }
-
     }
 
     public function markCorrectAnswer(int $answerId)
@@ -113,9 +112,23 @@ class QuestionApiController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(CreateQuestionRequest $request)
     {
-        //
+        DB::beginTransaction();
+        try {
+            $question = $this->questionService->store($request);
+            DB::commit();
+            return response()->json([
+                'message' => __('question.store.success'),
+                'data' => $question
+            ], 201);
+        } catch (Throwable $e) {
+            DB::rollBack();
+            return response()->json([
+                // 'message' => __('question.store.failed'),
+                'message' => $e->getMessage(),
+            ], 400);
+        }
     }
 
 
