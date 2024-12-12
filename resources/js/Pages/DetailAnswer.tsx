@@ -139,7 +139,9 @@ function DetailAnswer({ question, answers }: any) {
               </Breadcrumbs>
             </div>
             <div className='order-1 my-3 self-end sm:order-2 sm:my-0'>
-              <Button color='primaryGradient'>Buat Pertanyaan</Button>
+              <Button as={Link} href='/question/create' color='primaryGradient'>
+                Buat Pertanyaan
+              </Button>
             </div>
           </div>
           <QuestionCardDetail question={questionData} />

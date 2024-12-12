@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Inertia\Inertia;
 use App\Http\Requests\Question\CreateAnswerRequest;
 use App\Http\Requests\Question\CreateQuestionRequest;
+use App\Models\Education;
 use App\Services\AnswerService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redirect;
@@ -93,5 +94,13 @@ class QuestionController extends Controller
             DB::rollBack();
         }
         return Redirect::route('question.show', ['slug' => $answer->question->slug]);
+    }
+
+    public function create()
+    {
+        $educations = Education::all();
+        return Inertia::render('Question/CreateQuestion', [
+            'educations' => $educations
+        ]);
     }
 }

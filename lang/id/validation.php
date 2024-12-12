@@ -39,7 +39,7 @@ return [
   'digits_between' => ':attribute harus berupa angka antara :min dan :max digit.',
   'dimensions' => ':attribute tidak memiliki dimensi gambar yang valid.',
   'distinct' => ':attribute memiliki nilai duplikat.',
-  'email' => ':attribute bukan alamat email yang valid.',
+  'email' => 'Harap masukkan alamat email yang valid.',
   'exists' => ':attribute yang dipilih tidak valid.',
   'file' => ':attribute harus berupa file.',
   'filled' => ':attribute harus diisi.',

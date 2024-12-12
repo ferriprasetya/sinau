@@ -3,7 +3,9 @@ import FilterMakeQuestion from '@/Components/FilterMakeQuestion'
 import { Input } from '@/Components/Input'
 import Typography from '@/Components/Typography'
 import Layout from '@/Layouts/Layout'
-import { Head } from '@inertiajs/react'
+import { Education } from '@/types/education'
+import { QuestionCreateRequest } from '@/types/question'
+import { Head, useForm } from '@inertiajs/react'
 import {
   Autocomplete,
   AutocompleteItem,
@@ -12,15 +14,22 @@ import {
   SelectItem,
   Textarea,
 } from '@nextui-org/react'
-import { useState } from 'react'
+import { useCallback, useState } from 'react'
 
-function MakeQuestion() {
-  const educations = [
-    { key: 'smp', label: 'SMP' },
-    { key: 'sma', label: 'SMA' },
-    { key: 'smk', label: 'SMK' },
-    { key: 'kuliah', label: 'Kuliah' },
-  ]
+function CreateQuestion({ educations }: { educations: Education[] }) {
+  const {
+    data: questionForm,
+    setData: setQuestionForm,
+    post: submitQuestion,
+    processing: isLoadingSubmit,
+    errors: questionFormError,
+  } = useForm<QuestionCreateRequest>({
+    title: '',
+    description: '',
+    categories: [],
+    education: null,
+  })
+
   const [value, setValue] = useState<string>('')
   const [selectedKey, setSelectedKey] = useState<React.Key | null>(null)
 
@@ -78,11 +87,15 @@ function MakeQuestion() {
             isComplex={isComplex}
             setIsComplex={setIsComplex}
           />
+          <pre>{JSON.stringify(questionForm)}</pre>
           <div className='w-full rounded-xl bg-white px-6 py-6'>
             <Input
-              isClearable
-              name='title'
+              errorMessage={questionFormError.title}
+              value={questionForm.title}
+              onChange={(e) => setQuestionForm('title', e.target.value)}
+              isInvalid={!!questionFormError.title}
               isRequired
+              name='title'
               type='text'
               label='Judul Pertanyaan'
               labelPlacement='outside'
@@ -131,10 +144,16 @@ function MakeQuestion() {
               radius='sm'
               labelPlacement='outside'
               description='Pilih tingkat pendidikan yang sesuai dengan pertanyaan Anda'
+              items={educations}
             >
-              {educations.map((education) => (
-                <SelectItem key={education.key}>{education.label}</SelectItem>
-              ))}
+              {(education) => (
+                <SelectItem
+                  key={education.id}
+                  onClick={() => setQuestionForm('education', education)}
+                >
+                  {education.label}
+                </SelectItem>
+              )}
             </Select>
           </div>
           <div
@@ -157,4 +176,4 @@ function MakeQuestion() {
   )
 }
 
-export default MakeQuestion
+export default CreateQuestion
