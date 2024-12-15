@@ -9,7 +9,9 @@ import convertObjectCamelToSnakeCase from '@/lib/convertObjectCamelToSnakeCase'
 
 export const getListQuestion = async (filter: QuestionListFilter) => {
   const queryString = buildParams(filter)
-  const response = await window.axios.get(`/api/questions${queryString}`)
+  const response = await window.axios.get(`/question/list${queryString}`, {
+    withCredentials: true,
+  })
   return mapQuestionList(response?.data)
 }
 

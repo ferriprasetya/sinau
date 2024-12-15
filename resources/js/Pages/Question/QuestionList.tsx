@@ -1,6 +1,6 @@
 import { Button } from '@/Components/Button'
-import Filter from '@/Components/Filter'
-import Menu from '@/Components/Menu'
+import Filter from '@/Components/Questions/Filter'
+import Menu from '@/Components/Questions/Menu'
 import EmptyState from '@/Components/EmptyState'
 import QuestionCard from '@/Components/Questions/QuestionCard'
 import Layout from '@/Layouts/Layout'
@@ -10,11 +10,14 @@ import {
   updateQuestionVote,
 } from '@/services/questions/QuestionService'
 import { QuestionList, QuestionListFilter } from '@/types/question'
-import { Head, Link } from '@inertiajs/react'
-import { useCallback, useEffect, useState } from 'react'
+import { Head, Link, router } from '@inertiajs/react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import QuestionCardLoading from '@/Components/Questions/QuestionCardLoading'
+import { FaArrowUp, FaListUl } from 'react-icons/fa'
+import { BsPersonLinesFill } from 'react-icons/bs'
 
 export default function QuestionListPage({ questions }: any) {
+  const selectedMenu = new URLSearchParams(window.location.search).get('menu')
   const [listQuestion, setListQuestion] = useState<QuestionList>({
     data: [],
     currentPage: 1,
@@ -24,6 +27,9 @@ export default function QuestionListPage({ questions }: any) {
     search: '',
     category: null,
     page: 1,
+    answer: null,
+    sort: '',
+    education: null,
   })
   const [isLoading, setIsLoading] = useState(true)
   const [isLoadingMore, setIsLoadingMore] = useState(false)
@@ -33,21 +39,26 @@ export default function QuestionListPage({ questions }: any) {
     setIsLoading(false)
   }, [questions])
 
-  const onGetListQuestion = useCallback(async () => {
-    const response = getListQuestion(filter)
-    response
-      .then((responseData) => {
-        setListQuestion((prev) => ({
-          data: [...prev.data, ...responseData.data],
-          currentPage: responseData.currentPage,
-          lastPage: responseData.lastPage,
-        }))
-      })
-      .finally(() => {
-        setIsLoading(false)
-        setIsLoadingMore(false)
-      })
-  }, [filter])
+  const onGetListQuestion = useCallback(
+    async (loadmore = false) => {
+      const response = getListQuestion({ ...filter, menu: selectedMenu ?? '' })
+      response
+        .then((responseData) => {
+          setListQuestion((prev) => ({
+            data: loadmore
+              ? [...prev.data, ...responseData.data]
+              : responseData.data,
+            currentPage: responseData.currentPage,
+            lastPage: responseData.lastPage,
+          }))
+        })
+        .finally(() => {
+          setIsLoading(false)
+          setIsLoadingMore(false)
+        })
+    },
+    [filter, selectedMenu],
+  )
 
   const onLoadMore = () => {
     setIsLoadingMore(true)
@@ -55,12 +66,11 @@ export default function QuestionListPage({ questions }: any) {
   }
 
   useEffect(() => {
-    if (filter.search || filter.category) {
-      setIsLoading(true)
-    }
-
-    if (filter.search || filter.category || filter.page > 1) {
-      onGetListQuestion()
+    setIsLoading(true)
+    if (filter.page > 1) {
+      onGetListQuestion(true)
+    } else {
+      onGetListQuestion(false)
     }
   }, [filter, onGetListQuestion])
 
@@ -71,23 +81,88 @@ export default function QuestionListPage({ questions }: any) {
   const onDownvoteQuestion = (questionId: string) => {
     updateQuestionVote(questionId, false)
   }
+
+  const isFilterUsed = useMemo(() => {
+    return !!(
+      filter.search ||
+      filter.category ||
+      filter.answer ||
+      filter.sort ||
+      filter.education
+    )
+  }, [filter])
+
+  const menuOptions = useMemo(
+    () => [
+      {
+        key: '',
+        label: 'Semua pertanyaan',
+        icon: (
+          <div className='flex h-8 w-8 items-center justify-center rounded-sm bg-primary-50'>
+            <FaListUl className='fill-primary-600' />
+          </div>
+        ),
+      },
+      {
+        key: 'upvoted',
+        label: 'Pertanyaan Didukung',
+        icon: (
+          <div className='flex h-8 w-8 items-center justify-center rounded-sm bg-success-50'>
+            <FaArrowUp className='fill-success-600' />
+          </div>
+        ),
+      },
+      {
+        key: 'my-question',
+        label: 'Pertanyaan Saya',
+        icon: (
+          <div className='flex h-8 w-8 items-center justify-center rounded-sm bg-info-50'>
+            <BsPersonLinesFill className='fill-info-600' />
+          </div>
+        ),
+      },
+    ],
+    [],
+  )
+  const onChangeMenu = (selectedMenu: string) => {
+    router.get('/question', selectedMenu ? { menu: selectedMenu } : undefined, {
+      replace: true,
+    })
+  }
+
+  const selectedTitle = useMemo(
+    () =>
+      menuOptions.find((option) => option.key === selectedMenu)?.label ??
+      'Semua Pertanyaan',
+    [menuOptions, selectedMenu],
+  )
   return (
     <Layout>
       <Head title='Pertanyaan' />
-      <div className='container mt-3 flex max-w-[1024px] px-4 sm:mx-auto'>
+      <div className='container mt-3 flex w-full max-w-[1024px] px-4 sm:mx-auto'>
         <div className='hidden md:block md:w-1/3'>
-          <Menu />
+          <Menu
+            menuOptions={menuOptions}
+            selectedMenu={selectedMenu ?? ''}
+            onChangeMenu={onChangeMenu}
+          />
         </div>
-        <div className='mx-auto md:w-2/3'>
+        <div className='w-full md:w-2/3'>
           <div className='mt-8 flex justify-between'>
-            <h1 className='text-2xl font-bold'>Semua pertanyaan</h1>
+            <h1 className='text-2xl font-bold'>{selectedTitle}</h1>
             <Button as={Link} href='/question/create'>
               Buat Pertanyaan
             </Button>
           </div>
-          <Filter />
+          <Filter filterData={filter} setFilterData={setFilter} />
           <div className='mt-8 flex flex-col gap-2'>
-            {listQuestion.data?.length > 0 ? (
+            {isLoading ? (
+              Array(3)
+                .fill('')
+                .map((_, index) => (
+                  <QuestionCardLoading key={`loading-question-${index}`} />
+                ))
+            ) : listQuestion.data?.length > 0 ? (
               listQuestion.data.map((question) => (
                 <QuestionCard
                   key={question.id}
@@ -96,14 +171,8 @@ export default function QuestionListPage({ questions }: any) {
                   onClickDownvote={onDownvoteQuestion}
                 />
               ))
-            ) : isLoading ? (
-              Array(3)
-                .fill('')
-                .map((_, index) => (
-                  <QuestionCardLoading key={`loading-question-${index}`} />
-                ))
             ) : (
-              <EmptyState isFilter={!!(filter.search || filter.category)} />
+              <EmptyState isFilter={isFilterUsed} />
             )}
             {listQuestion.currentPage < listQuestion.lastPage && (
               <Button

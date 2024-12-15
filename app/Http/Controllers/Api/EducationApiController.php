@@ -3,34 +3,25 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Services\CategoryService;
+use App\Services\EducationService;
 use Illuminate\Http\Request;
 
-class CategoryApiController extends Controller
+class EducationApiController extends Controller
 {
     public function __construct(
-        protected CategoryService $categoryService,
+        protected EducationService $educationService,
     ) {
     }
+
     /**
      * Display a listing of the resource.
      */
     public function index(Request $request)
     {
-        $categories = $this->categoryService->index($request);
+        $educations = $this->educationService->index($request);
         return response()->json([
-            'message' => __('category.index.success'),
-            'data' => $categories
-        ], 200);
-    }
-
-
-    public function getPaginatedCategories(Request $request)
-    {
-        $categories = $this->categoryService->getPaginatedCategories($request);
-        return response()->json([
-            'message' => __('category.index.success'),
-            'data' => $categories
+            'message' => __('education.index.success'),
+            'data' => $educations
         ], 200);
     }
 

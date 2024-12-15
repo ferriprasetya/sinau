@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\Api\CategoryApiController;
+use App\Http\Controllers\Api\EducationApiController;
 use App\Http\Controllers\Api\QuestionApiController;
 use App\Http\Controllers\QuestionController;
 use App\Http\Controllers\ProfileController;
@@ -8,6 +10,10 @@ use Inertia\Inertia;
 
 Route::group(['prefix' => 'question'], function () {
     Route::get('/', [QuestionController::class, 'index'])->name('question.index');
+    Route::get(
+        '/list',
+        [QuestionApiController::class, 'index']
+    )->name('question.list');
     Route::get('/create', [QuestionController::class, 'create'])->name('question.create');
     Route::get('/{slug}', [QuestionController::class, 'show'])->name('question.show');
 
@@ -40,6 +46,10 @@ Route::group(['prefix' => 'question'], function () {
         )->name('question.answer.vote');
     });
 });
+
+
+Route::get('/categories', [CategoryApiController::class, 'getPaginatedCategories'])->name('categories.list');
+Route::get('/educations', [EducationApiController::class, 'index'])->name('educations.list');
 
 Route::get('/', function () {
     return to_route('question.index');

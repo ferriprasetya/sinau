@@ -6,3 +6,9 @@ export type Category = {
   createdAt?: string
   updatedAt?: string
 }
+
+export type CategoryList = {
+  data: Category[]
+  currentPage: number
+  lastPage: number
+}
