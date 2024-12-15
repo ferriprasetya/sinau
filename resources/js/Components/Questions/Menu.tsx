@@ -1,45 +1,49 @@
 import { Listbox, ListboxItem } from '@nextui-org/react'
-import { FaListUl } from 'react-icons/fa6'
-import { FaArrowUp } from 'react-icons/fa'
-import { BsPersonLinesFill } from 'react-icons/bs'
-import ListBoxWrapper from '../ListBoxWrapper'
+import { useState } from 'react'
+import { usePage } from '@inertiajs/react'
 
-function Menu() {
+function Menu({
+  menuOptions,
+  selectedMenu,
+  onChangeMenu,
+}: {
+  menuOptions: {
+    key: string
+    label: string
+    icon: JSX.Element
+  }[]
+  selectedMenu: string
+  onChangeMenu: (value: string) => void
+}) {
+  const { auth } = usePage().props as any
+  const isLogin = !!auth.user
+  const [selectedMenuState, setSelectedMenu] = useState(
+    isLogin ? selectedMenu : '',
+  )
+
   return (
-    <ListBoxWrapper>
-      <Listbox variant='faded' aria-label='Listbox menu with icons'>
-        <ListboxItem
-          key='new'
-          startContent={
-            <div className='flex h-8 w-8 items-center justify-center rounded-sm bg-primary-50'>
-              <FaListUl className='fill-primary-600' />
-            </div>
-          }
-        >
-          Semua pertanyaan
-        </ListboxItem>
-        <ListboxItem
-          key='copy'
-          startContent={
-            <div className='flex h-8 w-8 items-center justify-center rounded-sm bg-success-50'>
-              <FaArrowUp className='fill-success-600' />
-            </div>
-          }
-        >
-          Pertanyaan Didukung
-        </ListboxItem>
-        <ListboxItem
-          key='edit'
-          startContent={
-            <div className='flex h-8 w-8 items-center justify-center rounded-sm bg-info-50'>
-              <BsPersonLinesFill className='fill-info-600' />
-            </div>
-          }
-        >
-          Pertanyaan saya
-        </ListboxItem>
+    <div className='fixed w-44 rounded-small border-small border-default-200 bg-white px-1 py-2 dark:border-default-100 md:w-60'>
+      <Listbox variant='faded' aria-label='Question menu' items={menuOptions}>
+        {(menu) => (
+          <ListboxItem
+            key={menu.key}
+            startContent={menu.icon}
+            onClick={() => {
+              if (menu.key !== selectedMenuState && isLogin) {
+                setSelectedMenu(menu.key)
+                onChangeMenu(menu.key)
+              }
+            }}
+            classNames={{
+              base: menu.key === selectedMenuState ? 'bg-neutral-50' : '',
+            }}
+            isDisabled={!isLogin && menu.key !== ''}
+          >
+            {menu.label}
+          </ListboxItem>
+        )}
       </Listbox>
-    </ListBoxWrapper>
+    </div>
   )
 }
 

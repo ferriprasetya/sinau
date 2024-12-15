@@ -15,6 +15,15 @@ class QuestionService
     {
         $questions = Question::with('user.badge', 'categories', 'votes')->withCount('answers');
 
+        $userId = auth()->id();
+        // filter menu
+        if ($request->has('menu') && $userId) {
+            $questions = match ($request->query('menu')) {
+                'upvoted' => $questions->whereHas('votes', fn($q) => $q->where('user_id', $userId)->where('is_upvote', true)),
+                'my-question' => $questions->where('user_id', $userId),
+                default => $questions,
+            };
+        }
         // filter answer
         if ($request->has('answer')) {
             $questions = match ($request->query('answer')) {
@@ -52,7 +61,6 @@ class QuestionService
         // pagination
         $questions = $questions->paginate(perPage: 10, page: $request->page ?? 1);
 
-        $userId = auth()->id();
         return [
             'data' => collect($questions->items())->map(function ($question) use ($userId) {
                 $question->is_upvoted = $userId ?

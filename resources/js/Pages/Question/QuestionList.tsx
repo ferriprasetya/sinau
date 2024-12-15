@@ -10,11 +10,14 @@ import {
   updateQuestionVote,
 } from '@/services/questions/QuestionService'
 import { QuestionList, QuestionListFilter } from '@/types/question'
-import { Head, Link } from '@inertiajs/react'
+import { Head, Link, router } from '@inertiajs/react'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import QuestionCardLoading from '@/Components/Questions/QuestionCardLoading'
+import { FaArrowUp, FaListUl } from 'react-icons/fa'
+import { BsPersonLinesFill } from 'react-icons/bs'
 
 export default function QuestionListPage({ questions }: any) {
+  const selectedMenu = new URLSearchParams(window.location.search).get('menu')
   const [listQuestion, setListQuestion] = useState<QuestionList>({
     data: [],
     currentPage: 1,
@@ -38,7 +41,7 @@ export default function QuestionListPage({ questions }: any) {
 
   const onGetListQuestion = useCallback(
     async (loadmore = false) => {
-      const response = getListQuestion(filter)
+      const response = getListQuestion({ ...filter, menu: selectedMenu ?? '' })
       response
         .then((responseData) => {
           setListQuestion((prev) => ({
@@ -54,7 +57,7 @@ export default function QuestionListPage({ questions }: any) {
           setIsLoadingMore(false)
         })
     },
-    [filter],
+    [filter, selectedMenu],
   )
 
   const onLoadMore = () => {
@@ -88,16 +91,65 @@ export default function QuestionListPage({ questions }: any) {
       filter.education
     )
   }, [filter])
+
+  const menuOptions = useMemo(
+    () => [
+      {
+        key: '',
+        label: 'Semua pertanyaan',
+        icon: (
+          <div className='flex h-8 w-8 items-center justify-center rounded-sm bg-primary-50'>
+            <FaListUl className='fill-primary-600' />
+          </div>
+        ),
+      },
+      {
+        key: 'upvoted',
+        label: 'Pertanyaan Didukung',
+        icon: (
+          <div className='flex h-8 w-8 items-center justify-center rounded-sm bg-success-50'>
+            <FaArrowUp className='fill-success-600' />
+          </div>
+        ),
+      },
+      {
+        key: 'my-question',
+        label: 'Pertanyaan Saya',
+        icon: (
+          <div className='flex h-8 w-8 items-center justify-center rounded-sm bg-info-50'>
+            <BsPersonLinesFill className='fill-info-600' />
+          </div>
+        ),
+      },
+    ],
+    [],
+  )
+  const onChangeMenu = (selectedMenu: string) => {
+    router.get('/question', selectedMenu ? { menu: selectedMenu } : undefined, {
+      replace: true,
+    })
+  }
+
+  const selectedTitle = useMemo(
+    () =>
+      menuOptions.find((option) => option.key === selectedMenu)?.label ??
+      'Semua Pertanyaan',
+    [menuOptions, selectedMenu],
+  )
   return (
     <Layout>
       <Head title='Pertanyaan' />
       <div className='container mt-3 flex w-full max-w-[1024px] px-4 sm:mx-auto'>
         <div className='hidden md:block md:w-1/3'>
-          <Menu />
+          <Menu
+            menuOptions={menuOptions}
+            selectedMenu={selectedMenu ?? ''}
+            onChangeMenu={onChangeMenu}
+          />
         </div>
         <div className='w-full md:w-2/3'>
           <div className='mt-8 flex justify-between'>
-            <h1 className='text-2xl font-bold'>Semua pertanyaan</h1>
+            <h1 className='text-2xl font-bold'>{selectedTitle}</h1>
             <Button as={Link} href='/question/create'>
               Buat Pertanyaan
             </Button>

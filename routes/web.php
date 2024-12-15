@@ -10,6 +10,10 @@ use Inertia\Inertia;
 
 Route::group(['prefix' => 'question'], function () {
     Route::get('/', [QuestionController::class, 'index'])->name('question.index');
+    Route::get(
+        '/list',
+        [QuestionApiController::class, 'index']
+    )->name('question.list');
     Route::get('/create', [QuestionController::class, 'create'])->name('question.create');
     Route::get('/{slug}', [QuestionController::class, 'show'])->name('question.show');
 
