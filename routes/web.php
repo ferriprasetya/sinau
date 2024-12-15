@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\QuestionApiController;
 use App\Http\Controllers\QuestionController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
@@ -16,6 +17,10 @@ Route::group(['prefix' => 'question'], function () {
             '/',
             [QuestionController::class, 'store']
         )->name('question.store');
+        Route::post(
+            '/vote',
+            [QuestionApiController::class, 'voteQuestion']
+        )->name('question.vote');
 
         Route::post(
             '/answer',
@@ -29,6 +34,10 @@ Route::group(['prefix' => 'question'], function () {
             '/answer/{answerId}/removeCorrect',
             [QuestionController::class, 'removeAsCorrectAnswer']
         )->name('question.answer.removeCorrect');
+        Route::post(
+            '/answer/vote',
+            [QuestionApiController::class, 'voteQuestionAnswer']
+        )->name('question.answer.vote');
     });
 });
 

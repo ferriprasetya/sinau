@@ -16,7 +16,11 @@ import {
   mapQuestionAnswers,
   mapQuestionDetail,
 } from '@/services/questions/QuestionMapper'
-import { getQuestionAnswers } from '@/services/questions/QuestionService'
+import {
+  getQuestionAnswers,
+  updateAnswerVote,
+  updateQuestionVote,
+} from '@/services/questions/QuestionService'
 import ModalConfirm from '@/Components/ModalConfirm'
 import { Answer } from '@/types/question'
 import convertObjectCamelToSnakeCase from '@/lib/convertObjectCamelToSnakeCase'
@@ -119,6 +123,21 @@ function DetailAnswer({ question, answers }: any) {
     })
   }
 
+  const onUpvoteAnswer = (answerId: number) => {
+    updateAnswerVote(answerId, true)
+  }
+
+  const onDownvoteAnswer = (answerId: number) => {
+    updateAnswerVote(answerId, false)
+  }
+
+  const onUpvoteQuestion = (questionId: string) => {
+    updateQuestionVote(questionId, true)
+  }
+
+  const onDownvoteQuestion = (questionId: string) => {
+    updateQuestionVote(questionId, false)
+  }
   return (
     <Layout>
       <Head title='Beranda' />
@@ -144,7 +163,11 @@ function DetailAnswer({ question, answers }: any) {
               </Button>
             </div>
           </div>
-          <QuestionCardDetail question={questionData} />
+          <QuestionCardDetail
+            question={questionData}
+            onClickDownvote={onDownvoteQuestion}
+            onClickUpvote={onUpvoteQuestion}
+          />
 
           <Typography
             variant='t'
@@ -192,6 +215,8 @@ function DetailAnswer({ question, answers }: any) {
                 answer={answer}
                 ableToCorrect={userId === questionData.userId}
                 markAsCorrect={markAsCorrectAnswer}
+                onClickDownvote={onDownvoteAnswer}
+                onClickUpvote={onUpvoteAnswer}
               />
             ))
           ) : (

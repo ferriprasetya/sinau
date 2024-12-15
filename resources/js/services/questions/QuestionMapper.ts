@@ -23,6 +23,8 @@ export function mapQuestionList(response: any): QuestionList {
             imageUrl: item.image_url,
             content: item.content,
             isCorrect: item.is_correct,
+            isUpvoted: item.is_upvoted,
+            isDownvoted: item.is_downvoted,
             createdAt: dayjs(item.created_at).fromNow(true) + ' yang lalu',
             updatedAt: dayjs(item.created_at).fromNow(true) + ' yang lalu',
             user: {
@@ -62,6 +64,8 @@ export function mapQuestionDetail(response: any): Question {
     imageUrl: response.image_url,
     content: response.content,
     isCorrect: response.is_correct,
+    isUpvoted: response.is_upvoted,
+    isDownvoted: response.is_downvoted,
     createdAt: dayjs(response.created_at).fromNow(true) + ' yang lalu',
     updatedAt: dayjs(response.updated_at).fromNow(true) + ' yang lalu',
     user: {
@@ -98,6 +102,8 @@ export function mapQuestionAnswers(response: any): Answer[] {
           downvote: item.downvote,
           isCorrect: item.is_correct,
           questionId: item.question_id,
+          isUpvoted: item.is_upvoted,
+          isDownvoted: item.is_downvoted,
           user: {
             id: item.user.id,
             name: item.user.name,

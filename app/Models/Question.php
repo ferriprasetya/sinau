@@ -53,9 +53,9 @@ class Question extends Model
         return $this->belongsToMany(Category::class, 'question_categories');
     }
 
-    public function upvotes()
+    public function votes()
     {
-        return $this->hasMany(UpvoteQuestion::class);
+        return $this->hasMany(VoteQuestions::class);
     }
 
     public function answers()

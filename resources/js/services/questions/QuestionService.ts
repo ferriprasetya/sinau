@@ -5,6 +5,7 @@ import {
 } from './QuestionMapper'
 import { QuestionListFilter } from '@/types/question'
 import { buildParams } from '@/lib/buildParams'
+import convertObjectCamelToSnakeCase from '@/lib/convertObjectCamelToSnakeCase'
 
 export const getListQuestion = async (filter: QuestionListFilter) => {
   const queryString = buildParams(filter)
@@ -22,4 +23,35 @@ export const getQuestionAnswers = async (questionId: string) => {
     `/api/questions/${questionId}/answers`,
   )
   return mapQuestionAnswers(response?.data?.data)
+}
+
+export const updateQuestionVote = async (
+  questionId: string,
+  isUpvote: boolean,
+) => {
+  await window.axios.post(
+    `/question/vote`,
+    convertObjectCamelToSnakeCase({
+      questionId,
+      isUpvote,
+    }),
+    {
+      withCredentials: true,
+    },
+  )
+  return true
+}
+
+export const updateAnswerVote = async (answerId: number, isUpvote: boolean) => {
+  await window.axios.post(
+    `/question/answer/vote`,
+    convertObjectCamelToSnakeCase({
+      answerId,
+      isUpvote,
+    }),
+    {
+      withCredentials: true,
+    },
+  )
+  return true
 }

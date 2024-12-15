@@ -5,7 +5,10 @@ import EmptyState from '@/Components/EmptyState'
 import QuestionCard from '@/Components/Questions/QuestionCard'
 import Layout from '@/Layouts/Layout'
 import { mapQuestionList } from '@/services/questions/QuestionMapper'
-import { getListQuestion } from '@/services/questions/QuestionService'
+import {
+  getListQuestion,
+  updateQuestionVote,
+} from '@/services/questions/QuestionService'
 import { QuestionList, QuestionListFilter } from '@/types/question'
 import { Head, Link } from '@inertiajs/react'
 import { useCallback, useEffect, useState } from 'react'
@@ -61,6 +64,13 @@ export default function QuestionListPage({ questions }: any) {
     }
   }, [filter, onGetListQuestion])
 
+  const onUpvoteQuestion = (questionId: string) => {
+    updateQuestionVote(questionId, true)
+  }
+
+  const onDownvoteQuestion = (questionId: string) => {
+    updateQuestionVote(questionId, false)
+  }
   return (
     <Layout>
       <Head title='Pertanyaan' />
@@ -79,7 +89,12 @@ export default function QuestionListPage({ questions }: any) {
           <div className='mt-8 flex flex-col gap-2'>
             {listQuestion.data?.length > 0 ? (
               listQuestion.data.map((question) => (
-                <QuestionCard key={question.id} question={question} />
+                <QuestionCard
+                  key={question.id}
+                  question={question}
+                  onClickUpvote={onUpvoteQuestion}
+                  onClickDownvote={onDownvoteQuestion}
+                />
               ))
             ) : isLoading ? (
               Array(3)

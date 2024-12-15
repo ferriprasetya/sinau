@@ -17,6 +17,8 @@ export type Question = {
   user: User
   categories: Category[]
   totalAnswer?: number
+  isUpvoted?: boolean
+  isDownvoted?: boolean
 }
 
 export type QuestionListFilter = {
@@ -48,6 +50,8 @@ export type Answer = {
   createdAt: string
   updatedAt: string
   user?: User
+  isUpvoted?: boolean
+  isDownvoted?: boolean
 }
 
 export type QuestionCreateRequest = {
