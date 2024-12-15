@@ -22,7 +22,7 @@ function Menu({
   )
 
   return (
-    <div className='fixed w-44 rounded-small border-small border-default-200 bg-white px-1 py-2 dark:border-default-100 md:w-60'>
+    <div className='fixed mt-8 w-44 rounded-small border-small border-default-200 bg-white px-1 py-2 dark:border-default-100 md:w-60'>
       <Listbox variant='faded' aria-label='Question menu' items={menuOptions}>
         {(menu) => (
           <ListboxItem
