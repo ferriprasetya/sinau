@@ -7,7 +7,7 @@ import { route } from '../../vendor/tightenco/ziggy'
 
 const appName = import.meta.env.VITE_APP_NAME || 'Laravel'
 
-createServer((page) =>
+createServer((page: any) =>
   createInertiaApp({
     page,
     render: ReactDOMServer.renderToString,
@@ -22,10 +22,8 @@ createServer((page) =>
       // @ts-expect-error
       global.route<RouteName> = (name, params, absolute) =>
         route(name, params as any, absolute, {
-          // @ts-expect-error
           ...page.props.ziggy,
 
-          // @ts-expect-error
           location: new URL(page.props.ziggy.location),
         })
       /* eslint-enable */

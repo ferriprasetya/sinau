@@ -1,4 +1,5 @@
 import { Category } from './category'
+import { Education } from './education'
 import { User } from './user'
 
 export type Question = {
@@ -51,4 +52,12 @@ export type Answer = {
   user?: User
   isUpvoted?: boolean
   isDownvoted?: boolean
+}
+
+export type QuestionCreateRequest = {
+  title: string
+  description: string
+  categories: Category[]
+  education: Education | null
+  imageUrl?: string
 }

@@ -118,6 +118,7 @@ class QuestionApiController extends Controller
      */
     public function store(CreateQuestionRequest $request)
     {
+        dd($request);
         DB::beginTransaction();
         try {
             $question = $this->questionService->store($request);
@@ -170,6 +171,8 @@ class QuestionApiController extends Controller
             ], 400);
         }
     }
+
+
 
 
     /**

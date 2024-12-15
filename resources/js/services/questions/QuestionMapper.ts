@@ -1,4 +1,10 @@
-import { Answer, Question, QuestionList } from '@/types/question'
+import convertObjectCamelToSnakeCase from '@/lib/convertObjectCamelToSnakeCase'
+import {
+  Answer,
+  Question,
+  QuestionCreateRequest,
+  QuestionList,
+} from '@/types/question'
 import dayjs from 'dayjs'
 
 export function mapQuestionList(response: any): QuestionList {
@@ -114,4 +120,16 @@ export function mapQuestionAnswers(response: any): Answer[] {
         }),
       )
     : []
+}
+
+export const mapQuestionCreatePayload = (data: QuestionCreateRequest) => {
+  const payload = {
+    title: data.title,
+    content: data.description,
+    categories: data.categories,
+    educationId: data.education?.id,
+    imageUrl: data.imageUrl,
+  }
+
+  return convertObjectCamelToSnakeCase(payload)
 }

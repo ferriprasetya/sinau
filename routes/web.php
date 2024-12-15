@@ -8,7 +8,9 @@ use Inertia\Inertia;
 
 Route::group(['prefix' => 'question'], function () {
     Route::get('/', [QuestionController::class, 'index'])->name('question.index');
+    Route::get('/create', [QuestionController::class, 'create'])->name('question.create');
     Route::get('/{slug}', [QuestionController::class, 'show'])->name('question.show');
+
 
     Route::middleware('auth')->group(function () {
         Route::post(
@@ -42,6 +44,7 @@ Route::group(['prefix' => 'question'], function () {
 Route::get('/', function () {
     return to_route('question.index');
 })->name('home');
+
 
 
 Route::middleware('auth')->group(function () {

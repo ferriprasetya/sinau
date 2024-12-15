@@ -10,7 +10,7 @@ import {
   updateQuestionVote,
 } from '@/services/questions/QuestionService'
 import { QuestionList, QuestionListFilter } from '@/types/question'
-import { Head } from '@inertiajs/react'
+import { Head, Link } from '@inertiajs/react'
 import { useCallback, useEffect, useState } from 'react'
 import QuestionCardLoading from '@/Components/Questions/QuestionCardLoading'
 
@@ -73,7 +73,7 @@ export default function QuestionListPage({ questions }: any) {
   }
   return (
     <Layout>
-      <Head title='Beranda' />
+      <Head title='Pertanyaan' />
       <div className='container mt-3 flex max-w-[1024px] px-4 sm:mx-auto'>
         <div className='hidden md:block md:w-1/3'>
           <Menu />
@@ -81,7 +81,9 @@ export default function QuestionListPage({ questions }: any) {
         <div className='mx-auto md:w-2/3'>
           <div className='mt-8 flex justify-between'>
             <h1 className='text-2xl font-bold'>Semua pertanyaan</h1>
-            <Button>Buat Pertanyaan</Button>
+            <Button as={Link} href='/question/create'>
+              Buat Pertanyaan
+            </Button>
           </div>
           <Filter />
           <div className='mt-8 flex flex-col gap-2'>
