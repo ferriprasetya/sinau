@@ -22,12 +22,6 @@ function CreateQuestion({ educations }: { educations: Education[] }) {
   const toggleConfirmLogin = () => {
     setIsConfirmLogin(!isConfirmLogin)
   }
-  const toggleAnswerQuestion = () => {
-    if (!isLogin) {
-      toggleConfirmLogin()
-      return
-    }
-  }
 
   const redirectToLogin = () => {
     router.visit('/login?redirectTo=/question/create')
@@ -51,11 +45,15 @@ function CreateQuestion({ educations }: { educations: Education[] }) {
     transformAnswerRequest((data) => {
       return mapQuestionCreatePayload(data)
     })
+    if (!isLogin) {
+      // Jika belum login, tampilkan modal konfirmasi
+      toggleConfirmLogin()
+      return
+    }
     submitQuestion(route('question.store'), {
       // preserveScroll: true,
       onFinish: () => {
-        // setIsConfirmLogin(true)
-        toggleAnswerQuestion()
+        // router.visit('/question')
       },
     })
   }

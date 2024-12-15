@@ -123,7 +123,7 @@ function DetailAnswer({ question, answers }: any) {
     <Layout>
       <Head title='Beranda' />
       <div className='container mx-auto mt-8 flex max-w-[1024px] flex-col items-start md:flex-row'>
-        <div className='space-y-8 px-4 sm:mx-auto'>
+        <div className='w-full space-y-8 px-4 sm:mx-auto'>
           <div className='flex w-full flex-col justify-between sm:flex-row sm:items-center md:gap-8'>
             <div className='order-2 sm:order-1'>
               <Breadcrumbs

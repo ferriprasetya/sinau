@@ -119,9 +119,11 @@ export default function QuestionCardDetail({
             </span>
           </button>
         </div>
+        {/* {currentUser.id === user.id && ( */}
         <button className='order-1 flex items-center gap-1 text-sm font-medium text-neutral-500 sm:order-2'>
           <FaPenToSquare className='h-5 w-5' /> Edit Pertanyaan
         </button>
+        {/* )} */}
       </CardFooter>
     </Card>
   )
