@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Http\Requests\Question\CreateAnswerRequest;
 use App\Models\Answer;
 use App\Models\Question;
+use App\Models\VoteAnswers;
 use Illuminate\Http\Request;
 
 class AnswerService
@@ -43,13 +44,84 @@ class AnswerService
     public function removeAsCorrect(int $answerId)
     {
         $answer = Answer::find($answerId);
-        $question = Question::find($answer->question_id);
+        $answer = Question::find($answer->answer_id);
         $answer->is_correct = false;
-        $question->is_correct = false;
+        $answer->is_correct = false;
 
-        $question->save();
+        $answer->save();
         $answer->save();
 
+        return $answer;
+    }
+
+    public function voteAnswer(int $answerId, bool $upvote)
+    {
+        if ($upvote) {
+            return $this->upvoteAnswer($answerId);
+        } else {
+            return $this->downvoteAnswer($answerId);
+        }
+    }
+
+    public function upvoteAnswer(int $answerId)
+    {
+        $userId = auth()->id();
+        $upvoteAnswer = VoteAnswers::where('answer_id', $answerId)->where('user_id', $userId);
+        $answer = Answer::find($answerId);
+
+        // check is already upvoted
+        if ($upvoteAnswer->first()) {
+            if ($upvoteAnswer->first()->is_upvote) {
+                $upvoteAnswer->delete();
+
+                $answer->upvote -= 1;
+            } else {
+                $upvoteAnswer->update([
+                    'is_upvote' => true
+                ]);
+                $answer->upvote += 1;
+                $answer->downvote -= 1;
+            }
+        } else {
+            VoteAnswers::create([
+                'answer_id' => $answerId,
+                'user_id' => $userId,
+                'is_upvote' => true
+            ]);
+            $answer->upvote += 1;
+        }
+        $answer->save();
+        return $answer;
+    }
+
+    public function downvoteAnswer(int $answerId)
+    {
+        $userId = auth()->id();
+        $downvoteAnswer = VoteAnswers::where('answer_id', $answerId)->where('user_id', $userId);
+        $answer = Answer::find($answerId);
+
+        // check is already downvoted
+        if ($downvoteAnswer->first()) {
+            if (!$downvoteAnswer->first()->is_upvote) {
+                $downvoteAnswer->delete();
+
+                $answer->downvote -= 1;
+            } else {
+                $downvoteAnswer->update([
+                    'is_upvote' => false
+                ]);
+                $answer->downvote += 1;
+                $answer->upvote -= 1;
+            }
+        } else {
+            VoteAnswers::create([
+                'answer_id' => $answerId,
+                'user_id' => $userId,
+                'is_upvote' => false
+            ]);
+            $answer->downvote += 1;
+        }
+        $answer->save();
         return $answer;
     }
 }

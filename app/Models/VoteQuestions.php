@@ -5,18 +5,20 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class UpvoteQuestion extends Model
+class VoteQuestions extends Model
 {
     use HasFactory;
 
     protected $fillable = [
         'question_id',
         'user_id',
+        'is_upvote',
     ];
 
     protected $casts = [
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
+        'is_upvote' => 'boolean',
     ];
 
     public function question()

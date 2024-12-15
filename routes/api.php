@@ -8,6 +8,10 @@ Route::group(['prefix' => 'questions'], function () {
         '/',
         [QuestionApiController::class, 'index']
     )->name('question.api.index');
+    Route::post(
+        '/vote',
+        [QuestionApiController::class, 'voteQuestion']
+    )->name('question.api.vote');
     Route::get(
         '{questionId}/answers',
         [QuestionApiController::class, 'getQuestionAnswers']

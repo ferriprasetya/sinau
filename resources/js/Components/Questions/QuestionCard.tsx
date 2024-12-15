@@ -17,13 +17,17 @@ import { Question } from '@/types/question'
 import { IoPersonCircle } from 'react-icons/io5'
 import { HiMiniAcademicCap } from 'react-icons/hi2'
 import clsxm from '@/lib/clsxm'
+import { useMemo, useState } from 'react'
 
 interface QuestionCardProps {
   question: Question
+  onClickUpvote?: (_questionId: string) => void
+  onClickDownvote?: (_questionId: string) => void
 }
 
 export default function QuestionCard({
   question: {
+    id,
     title,
     categories,
     user,
@@ -35,8 +39,45 @@ export default function QuestionCard({
     upvote,
     downvote,
     totalAnswer,
+    isUpvoted,
+    isDownvoted,
   },
+  onClickUpvote = () => {},
+  onClickDownvote = () => {},
 }: QuestionCardProps) {
+  const [totalUpvote, setTotalUpvote] = useState(upvote)
+  const [totalDownvote, setTotalDownvote] = useState(downvote)
+
+  const handleUpvote = () => {
+    onClickUpvote(id)
+    if (checkIsUpvoted) {
+      setTotalUpvote(Math.max(totalUpvote - 1, 0))
+      return
+    }
+    setTotalUpvote(totalUpvote + 1)
+    setTotalDownvote(Math.max(totalDownvote - 1, 0))
+  }
+
+  const handleDownvote = () => {
+    onClickDownvote(id)
+    if (checkIsDownvoted) {
+      setTotalDownvote(Math.max(totalDownvote - 1, 0))
+    }
+    setTotalUpvote(Math.max(totalUpvote - 1, 0))
+    setTotalDownvote(totalDownvote + 1)
+  }
+
+  const checkIsUpvoted = useMemo(
+    () => (isUpvoted && totalUpvote == upvote) || totalUpvote > upvote,
+    [totalUpvote, isUpvoted, upvote],
+  )
+
+  const checkIsDownvoted = useMemo(
+    () =>
+      (isDownvoted && totalDownvote == downvote) || totalDownvote > downvote,
+    [totalDownvote, isDownvoted, downvote],
+  )
+
   return (
     <Card
       className={clsxm(
@@ -119,23 +160,64 @@ export default function QuestionCard({
           <p>{totalAnswer ?? 0} Jawaban</p>
         </div>
         <div className='flex items-center'>
-          <button className='mr-2 flex items-center rounded-xl bg-primary-50 px-2 py-1'>
-            <FaArrowUp className='h-3 fill-primary-500' />
-            <p className='text-sm font-medium text-primary-500'>Dukung</p>
-            <span className='mx-1 text-sm font-medium text-neutral-600'>
+          <button
+            className={clsxm(
+              'group mr-2 flex items-center rounded-xl border px-2 py-1 transition-all',
+              checkIsUpvoted
+                ? 'bg-primary-500 hover:opacity-80'
+                : 'bg-primary-50 hover:border-primary-500',
+            )}
+            onClick={handleUpvote}
+          >
+            <FaArrowUp
+              className={clsxm(
+                'h-3 group-hover:animate-bounce',
+                checkIsUpvoted ? 'fill-primary-50' : 'fill-primary-500',
+              )}
+            />
+            <p
+              className={clsxm(
+                'text-sm font-medium',
+                checkIsUpvoted ? 'text-primary-50' : 'text-primary-500',
+              )}
+            >
+              Dukung
+            </p>
+            <span
+              className={clsxm(
+                'mx-1 text-sm font-medium',
+                checkIsUpvoted ? 'text-neutral-300' : 'text-neutral-600',
+              )}
+            >
               |{' '}
             </span>
-            <span className='text-xs font-medium text-neutral-600 md:text-sm'>
-              {upvote}
+            <span
+              className={clsxm(
+                'text-xs font-medium md:text-sm',
+                checkIsUpvoted ? 'text-neutral-300' : 'text-neutral-600',
+              )}
+            >
+              {totalUpvote}
             </span>
           </button>
-          <button className='flex items-center rounded-xl bg-foreground-50 px-2 py-1'>
-            <FaArrowDown className='h-3 fill-neutral-700' />
-            <span className='mx-1 text-sm font-medium text-neutral-600'>
-              |{' '}
-            </span>
-            <span className='text-xs font-medium text-neutral-600 md:text-sm'>
-              {downvote}
+          <button
+            className={clsxm(
+              'group flex items-center rounded-xl border px-2 py-1',
+              checkIsDownvoted
+                ? 'bg-neutral-500 text-foreground-50 hover:opacity-80'
+                : 'bg-foreground-50 text-neutral-600 hover:border-neutral-500',
+            )}
+            onClick={handleDownvote}
+          >
+            <FaArrowDown
+              className={clsxm(
+                'h-3 group-hover:animate-bounce',
+                checkIsDownvoted ? 'fill-foreground-50' : 'fill-neutral-700',
+              )}
+            />
+            <span className='mx-1 text-sm font-medium'>| </span>
+            <span className='text-xs font-medium md:text-sm'>
+              {totalDownvote}
             </span>
           </button>
         </div>

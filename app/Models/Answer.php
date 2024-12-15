@@ -33,4 +33,9 @@ class Answer extends Model
     {
         return $this->belongsTo(Question::class);
     }
+
+    public function votes()
+    {
+        return $this->hasMany(VoteAnswers::class);
+    }
 }

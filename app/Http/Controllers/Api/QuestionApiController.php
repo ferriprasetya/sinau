@@ -5,6 +5,10 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Question\CreateAnswerRequest;
 use App\Http\Requests\Question\CreateQuestionRequest;
+use App\Http\Requests\Question\UpdateQuestionVote;
+use App\Http\Requests\Question\VoteAnswerRequest;
+use App\Http\Requests\Question\VoteQuestionRequest;
+use App\Models\VoteAnswers;
 use App\Services\AnswerService;
 use App\Services\QuestionService;
 use Illuminate\Http\Request;
@@ -127,6 +131,42 @@ class QuestionApiController extends Controller
             return response()->json([
                 // 'message' => __('question.store.failed'),
                 'message' => $e->getMessage(),
+            ], 400);
+        }
+    }
+
+    public function voteQuestion(VoteQuestionRequest $request)
+    {
+        DB::beginTransaction();
+        try {
+            $question = $this->questionService->voteQuestion($request->question_id, $request->is_upvote);
+            DB::commit();
+            return response()->json([
+                'message' => __('question.vote.success'),
+                'data' => $question
+            ], 201);
+        } catch (Throwable $e) {
+            DB::rollBack();
+            return response()->json([
+                'message' => __('question.vote.failed'),
+            ], 400);
+        }
+    }
+
+    public function voteQuestionAnswer(VoteAnswerRequest $request)
+    {
+        DB::beginTransaction();
+        try {
+            $answer = $this->answerService->voteAnswer($request->answer_id, $request->is_upvote);
+            DB::commit();
+            return response()->json([
+                'message' => __('answer.vote.success'),
+                'data' => $answer
+            ], 201);
+        } catch (Throwable $e) {
+            DB::rollBack();
+            return response()->json([
+                'message' => __('answer.vote.failed'),
             ], 400);
         }
     }
