@@ -13,7 +13,7 @@ class CreateQuestionRequest extends FormRequest
     {
         return true;
     }
-
+    
     /**
      * Get the validation rules that apply to the request.
      *
@@ -25,9 +25,9 @@ class CreateQuestionRequest extends FormRequest
             'title' => 'required|string|max:255',
             'content' => 'nullable|string',
             'image_url' => 'nullable|string',
-            'user_id' => 'required|uuid|exists:users,id',
-            'categories' => 'nullable|array',
+            'categories' => 'required|array',
             'education_id' => 'required|uuid|exists:educations,id',
         ];
     }
+    
 }

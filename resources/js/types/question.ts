@@ -1,4 +1,5 @@
 import { Category } from './category'
+import { Education } from './education'
 import { User } from './user'
 
 export type Question = {
@@ -47,4 +48,12 @@ export type Answer = {
   createdAt: string
   updatedAt: string
   user?: User
+}
+
+export type QuestionCreateRequest = {
+  title: string
+  description: string
+  categories: Category[]
+  education: Education | null
+  imageUrl?: string
 }

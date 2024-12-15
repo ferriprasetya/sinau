@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Inertia\Inertia;
 use App\Http\Requests\Question\CreateAnswerRequest;
 use App\Http\Requests\Question\CreateQuestionRequest;
+use App\Models\Education;
 use App\Services\AnswerService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redirect;
@@ -19,7 +20,8 @@ class QuestionController extends Controller
     public function __construct(
         protected QuestionService $questionService,
         protected AnswerService $answerService,
-    ) {}
+    ) {
+    }
 
     /**
      * Display a listing of the resource.
@@ -53,9 +55,8 @@ class QuestionController extends Controller
         } catch (Throwable $e) {
             DB::rollBack();
         }
-        return Redirect::route('question.index');
+        return Redirect::route('home');
     }
-
     // QUESTION ANSWER
     public function createAnswer(CreateAnswerRequest $request)
     {
@@ -64,7 +65,6 @@ class QuestionController extends Controller
             $answer = $this->answerService->store($request);
             DB::commit();
         } catch (Throwable $exception) {
-            dd($exception);
             DB::rollBack();
         }
 
@@ -93,5 +93,13 @@ class QuestionController extends Controller
             DB::rollBack();
         }
         return Redirect::route('question.show', ['slug' => $answer->question->slug]);
+    }
+
+    public function create()
+    {
+        $educations = Education::all();
+        return Inertia::render('Question/CreateQuestion', [
+            'educations' => $educations
+        ]);
     }
 }

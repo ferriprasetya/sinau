@@ -67,14 +67,14 @@ class QuestionService
     public function store(CreateQuestionRequest $request)
     {
         $validated = $request->validated();
-        $question = Question::create([
-            'user_id' => $validated['user_id'],
-            'title' => $validated['title'],
-            'content' => $validated['content'],
-            'image_url' => $validated['image_url'] ?? null,
-            'education_id' => $validated['education_id'] ?? null,
-            ]);
 
+        $question = Question::create([
+            'user_id' => auth()->id(),
+            'title' => $validated['title'],
+            'content' => $validated['content'] ?? "",
+            'image_url' => $validated['image_url'] ?? null,
+            'education_id' => $validated['education_id'],
+        ]);
         // Handle categories
         if (isset($validated['categories'])) {
             $categoryIds = collect($validated['categories'])->map(function ($category) {

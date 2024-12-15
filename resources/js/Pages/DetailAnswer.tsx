@@ -24,7 +24,7 @@ function DetailAnswer({ question, answers }: any) {
   const { auth } = usePage().props as any
   const isLogin = !!auth.user
   const userId = auth.user?.id
-  const [questionData, _setQuestionData] = useState(mapQuestionDetail(question))
+  const questionData = mapQuestionDetail(question)
   const [answersData, setAnswersData] = useState(mapQuestionAnswers(answers))
 
   const sortAAnswers = [
@@ -123,7 +123,7 @@ function DetailAnswer({ question, answers }: any) {
     <Layout>
       <Head title='Beranda' />
       <div className='container mx-auto mt-8 flex max-w-[1024px] flex-col items-start md:flex-row'>
-        <div className='space-y-8 px-4 sm:mx-auto'>
+        <div className='w-full space-y-8 px-4 sm:mx-auto'>
           <div className='flex w-full flex-col justify-between sm:flex-row sm:items-center md:gap-8'>
             <div className='order-2 sm:order-1'>
               <Breadcrumbs
@@ -139,7 +139,9 @@ function DetailAnswer({ question, answers }: any) {
               </Breadcrumbs>
             </div>
             <div className='order-1 my-3 self-end sm:order-2 sm:my-0'>
-              <Button color='primaryGradient'>Buat Pertanyaan</Button>
+              <Button as={Link} href='/question/create' color='primaryGradient'>
+                Buat Pertanyaan
+              </Button>
             </div>
           </div>
           <QuestionCardDetail question={questionData} />
