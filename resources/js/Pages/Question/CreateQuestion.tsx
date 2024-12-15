@@ -1,27 +1,44 @@
 import { Button } from '@/Components/Button'
+import { CategorySelect } from '@/Components/CategorySelect'
 import FilterMakeQuestion from '@/Components/FilterMakeQuestion'
 import { Input } from '@/Components/Input'
+import ModalConfirm from '@/Components/ModalConfirm'
 import Typography from '@/Components/Typography'
 import Layout from '@/Layouts/Layout'
+import convertObjectCamelToSnakeCase from '@/lib/convertObjectCamelToSnakeCase'
 import { Education } from '@/types/education'
 import { QuestionCreateRequest } from '@/types/question'
-import { Head, useForm } from '@inertiajs/react'
-import {
-  Autocomplete,
-  AutocompleteItem,
-  Chip,
-  Select,
-  SelectItem,
-  Textarea,
-} from '@nextui-org/react'
-import { useCallback, useState } from 'react'
+import { Head, router, useForm, usePage } from '@inertiajs/react'
+import { Select, SelectItem, Textarea } from '@nextui-org/react'
+import { useState } from 'react'
 
 function CreateQuestion({ educations }: { educations: Education[] }) {
+  const { auth } = usePage().props as any
+  const isLogin = !!auth.user
+
+  const [isConfirmLogin, setIsConfirmLogin] = useState(false)
+  console.log(isConfirmLogin)
+
+  const toggleConfirmLogin = () => {
+    setIsConfirmLogin(!isConfirmLogin)
+  }
+  const toggleAnswerQuestion = () => {
+    if (!isLogin) {
+      toggleConfirmLogin()
+      return
+    }
+  }
+
+  const redirectToLogin = () => {
+    router.visit('/login?redirectTo=/question/create')
+  }
+
   const {
     data: questionForm,
     setData: setQuestionForm,
     post: submitQuestion,
     processing: isLoadingSubmit,
+    transform: transformAnswerRequest,
     errors: questionFormError,
   } = useForm<QuestionCreateRequest>({
     title: '',
@@ -30,48 +47,30 @@ function CreateQuestion({ educations }: { educations: Education[] }) {
     education: null,
   })
 
-  const [value, setValue] = useState<string>('')
-  const [selectedKey, setSelectedKey] = useState<React.Key | null>(null)
-
-  console.log(value, selectedKey)
-
-  const onSelectionChange = (key: React.Key | null) => {
-    setSelectedKey(key)
-  }
-
-  const onInputChange = (value: string) => {
-    setValue(value)
-  }
-
-  const categoryData = [
-    { key: 'ilmu pengetahuan alam', label: 'Ilmu Pengetahuan Alam' },
-    { key: 'ilmu pengetahuan sosial', label: 'Ilmu Pengetahuan Sosial' },
-    { key: 'matematika', label: 'Matematika' },
-    { key: 'bahasa indonesia', label: 'Bahasa Indonesia' },
-    { key: 'bahasa inggris', label: 'Bahasa Inggris' },
-    { key: 'bahasa jawa', label: 'Bahasa Jawa' },
-  ]
-  const initialcategories = [
-    'Apple',
-    'Banana',
-    'Cherry',
-    'Watermelon',
-    'Orange',
-  ]
-
-  const [categories, setcategories] = useState(initialcategories)
-
-  const handleClose = (categoryToRemove: string): void => {
-    setcategories(
-      categories.filter((category: string) => category !== categoryToRemove),
-    )
-    if (categories.length === 1) {
-      setcategories(initialcategories)
-    }
+  const onSubmitQuestion = () => {
+    transformAnswerRequest((data) => {
+      return convertObjectCamelToSnakeCase(data)
+    })
+    submitQuestion(route('question.store'), {
+      // preserveScroll: true,
+      onFinish: () => {
+        // setIsConfirmLogin(true)
+        toggleAnswerQuestion()
+      },
+    })
   }
 
   const [isComplex, setIsComplex] = useState(false)
 
+  const setEducationForm = (education: string) => {
+    const educationData: Education[] = []
+    educations.forEach((item) => {
+      if (item.id === education) {
+        educationData.push(item)
+      }
+    })
+    setQuestionForm('education', educationData[0])
+  }
   return (
     <Layout>
       <Head title='Buat Pertanyaan' />
@@ -87,7 +86,7 @@ function CreateQuestion({ educations }: { educations: Education[] }) {
             isComplex={isComplex}
             setIsComplex={setIsComplex}
           />
-          <pre>{JSON.stringify(questionForm)}</pre>
+          {/* <pre>{JSON.stringify(questionForm)}</pre> */}
           <div className='w-full rounded-xl bg-white px-6 py-6'>
             <Input
               errorMessage={questionFormError.title}
@@ -103,37 +102,12 @@ function CreateQuestion({ educations }: { educations: Education[] }) {
               description='Tuliskan judul yang singkat, mudah dimengerti, dan spesifik'
             />
           </div>
-          <div className='w-full rounded-xl bg-white px-6 py-6'>
-            <Autocomplete
-              label='Kategori'
-              variant='flat'
-              placeholder='Pilih kategori'
-              labelPlacement='outside'
-              defaultItems={categoryData}
-              className='w-full border-none'
-              allowsCustomValue={true}
-              onSelectionChange={onSelectionChange}
-              onInputChange={onInputChange}
-              isRequired
-              description='Tambahkan 1 - 5 kategori untuk mendeskripsikan bidang yang anda tanyakan'
-            >
-              {(item) => (
-                <AutocompleteItem key={item.key}>{item.label}</AutocompleteItem>
-              )}
-            </Autocomplete>
-            <p className='mt-1 flex space-x-3 text-small text-default-500'>
-              <p>Kategori Terpilih:</p>
-              {/* <Chip>{selectedKey?.toString() || ''}</Chip> */}
-              {categories.map((category, index) => (
-                <Chip
-                  key={index}
-                  onClose={() => handleClose(category)}
-                  variant='flat'
-                >
-                  {category}
-                </Chip>
-              ))}
-            </p>
+          <div className='mx-auto'>
+            <CategorySelect
+              onChange={(categories) => {
+                setQuestionForm('categories', categories)
+              }}
+            />
           </div>
           <div className='w-full rounded-xl bg-white px-6 py-6'>
             <Select
@@ -145,14 +119,10 @@ function CreateQuestion({ educations }: { educations: Education[] }) {
               labelPlacement='outside'
               description='Pilih tingkat pendidikan yang sesuai dengan pertanyaan Anda'
               items={educations}
+              onChange={(e) => setEducationForm(e.target.value)}
             >
               {(education) => (
-                <SelectItem
-                  key={education.id}
-                  onClick={() => setQuestionForm('education', education)}
-                >
-                  {education.label}
-                </SelectItem>
+                <SelectItem key={education.id}>{education.label}</SelectItem>
               )}
             </Select>
           </div>
@@ -164,12 +134,29 @@ function CreateQuestion({ educations }: { educations: Education[] }) {
             <Textarea
               description='Tuliskan penjabaran dari pertanyaan anda secara rinci dan berikan informasi yang dapat membantu untuk menjawab pertanyaan anda'
               label='Description'
-              placeholder='Enter your description (Default autosize)'
+              placeholder='Enter your description'
+              labelPlacement='outside'
+              onChange={(e) => setQuestionForm('description', e.target.value)}
             />
           </div>
           <div className='flex w-full justify-end'>
-            <Button>Simpan Pertanyaan</Button>
+            <Button
+              isDisabled={isLoadingSubmit}
+              isLoading={isLoadingSubmit}
+              onClick={onSubmitQuestion}
+            >
+              Simpan Pertanyaan
+            </Button>
           </div>
+          <ModalConfirm
+            isOpen={isConfirmLogin}
+            onOpenChange={toggleConfirmLogin}
+            title='Harap login untuk menjawab pertanyaan'
+            content='Anda tidak dapat membuat pertanyaan jika belum login. Harap login terlebih dahulu untuk melanjutkan.'
+            confirmText='Login'
+            confirmButtonColor='primaryGradient'
+            onConfirm={redirectToLogin}
+          />
         </div>
       </div>
     </Layout>

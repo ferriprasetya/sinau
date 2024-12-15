@@ -13,7 +13,7 @@ class CreateQuestionRequest extends FormRequest
     {
         return true;
     }
-
+    
     /**
      * Get the validation rules that apply to the request.
      *
@@ -30,4 +30,5 @@ class CreateQuestionRequest extends FormRequest
             'education_id' => 'required|uuid|exists:educations,id',
         ];
     }
+    
 }

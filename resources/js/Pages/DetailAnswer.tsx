@@ -24,7 +24,7 @@ function DetailAnswer({ question, answers }: any) {
   const { auth } = usePage().props as any
   const isLogin = !!auth.user
   const userId = auth.user?.id
-  const [questionData, _setQuestionData] = useState(mapQuestionDetail(question))
+  const questionData = mapQuestionDetail(question)
   const [answersData, setAnswersData] = useState(mapQuestionAnswers(answers))
 
   const sortAAnswers = [
