@@ -23,7 +23,7 @@ class Question extends Model
         'image_url',
         'content',
         'is_correct',
-        'categories_id',
+        'education_id',
     ];
 
     protected $casts = [

@@ -5,7 +5,7 @@ import { Input } from '@/Components/Input'
 import ModalConfirm from '@/Components/ModalConfirm'
 import Typography from '@/Components/Typography'
 import Layout from '@/Layouts/Layout'
-import convertObjectCamelToSnakeCase from '@/lib/convertObjectCamelToSnakeCase'
+import { mapQuestionCreatePayload } from '@/services/questions/QuestionMapper'
 import { Education } from '@/types/education'
 import { QuestionCreateRequest } from '@/types/question'
 import { Head, router, useForm, usePage } from '@inertiajs/react'
@@ -49,7 +49,7 @@ function CreateQuestion({ educations }: { educations: Education[] }) {
 
   const onSubmitQuestion = () => {
     transformAnswerRequest((data) => {
-      return convertObjectCamelToSnakeCase(data)
+      return mapQuestionCreatePayload(data)
     })
     submitQuestion(route('question.store'), {
       // preserveScroll: true,

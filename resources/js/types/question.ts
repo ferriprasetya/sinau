@@ -55,4 +55,5 @@ export type QuestionCreateRequest = {
   description: string
   categories: Category[]
   education: Education | null
+  imageUrl?: string
 }

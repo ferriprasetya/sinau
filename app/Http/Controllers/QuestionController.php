@@ -20,7 +20,8 @@ class QuestionController extends Controller
     public function __construct(
         protected QuestionService $questionService,
         protected AnswerService $answerService,
-    ) {}
+    ) {
+    }
 
     /**
      * Display a listing of the resource.
@@ -47,19 +48,14 @@ class QuestionController extends Controller
 
     public function store(CreateQuestionRequest $request)
     {
-        dump($request);
-        dd('hallo');
-        // DB::beginTransaction();
-        // try {
-        //     dd($request);
-        //     $this->questionService->store($request);
-        //     dd('success');
-        //     DB::commit();
-        // } catch (Throwable $e) {
-        //     dd($e);
-        //     DB::rollBack();
-        // }
-        // return Redirect::route('home');
+        DB::beginTransaction();
+        try {
+            $this->questionService->store($request);
+            DB::commit();
+        } catch (Throwable $e) {
+            DB::rollBack();
+        }
+        return Redirect::route('home');
     }
     // QUESTION ANSWER
     public function createAnswer(CreateAnswerRequest $request)
@@ -69,7 +65,6 @@ class QuestionController extends Controller
             $answer = $this->answerService->store($request);
             DB::commit();
         } catch (Throwable $exception) {
-            dd($exception);
             DB::rollBack();
         }
 

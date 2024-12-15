@@ -7,7 +7,7 @@ import { route } from '../../vendor/tightenco/ziggy'
 
 const appName = import.meta.env.VITE_APP_NAME || 'Laravel'
 
-createServer((page) =>
+createServer((page: any) =>
   createInertiaApp({
     page,
     render: ReactDOMServer.renderToString,
