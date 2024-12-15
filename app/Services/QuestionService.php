@@ -13,17 +13,41 @@ class QuestionService
 {
     public function getListQuestion(Request $request): array|object
     {
-        $questions = Question::with('user.badge', 'categories', 'votes')->withCount('answers')->orderBy('created_at', 'desc')->orderBy('upvote', 'desc');
+        $questions = Question::with('user.badge', 'categories', 'votes')->withCount('answers');
+
+        // filter answer
+        if ($request->has('answer')) {
+            $questions = match ($request->query('answer')) {
+                'unanswered' => $questions->having('answers_count', 0),
+                'no-correct' => $questions->whereDoesntHave('answers', fn($q) => $q->where('is_correct', 1)),
+                'correct-answer' => $questions->whereHas('answers', fn($q) => $q->where('is_correct', 1)),
+                default => $questions,
+            };
+        }
 
         // filter search
-        if ($request->has('search')) {
-            $questions = $questions->where('title', 'like', "%{$request->search}%")->orWhere('content', 'like', "%{$request->search}%");
+        if ($request->has('q')) {
+            $questions = $questions->where('title', 'like', "%{$request->query('q')}%")->orWhere('content', 'like', "%{$request->query('q')}%");
         }
 
         // filter category
         if ($request->has('category')) {
-            $questions = $questions->where('categories_id', $request->category);
+            $categoryIds = explode(',', $request->query('category'));
+            $questions = $questions->whereHas('categories', fn($q) => $q->whereIn('categories.id', $categoryIds));
         }
+
+        // filter education
+        if ($request->has('education')) {
+            $educationIds = explode(',', $request->query('education'));
+            $questions = $questions->whereIn('education_id', $educationIds);
+        }
+
+        // sorting
+        $questions = match ($request->query('sort')) {
+            'most-answered' => $questions->orderBy('answers_count', 'desc')->orderBy('created_at', 'desc'),
+            'most-upvoted' => $questions->orderBy('upvote', 'desc'),
+            default => $questions->orderBy('created_at', 'desc')->orderBy('upvote', 'desc'),
+        };        
 
         // pagination
         $questions = $questions->paginate(perPage: 10, page: $request->page ?? 1);
@@ -114,15 +138,15 @@ class QuestionService
         if (isset($validated['categories'])) {
             $categoryIds = collect($validated['categories'])->map(function ($category) {
                 // Check if the category exists
-                $existingCategory = Category::find($category['id']);
-
-                if ($existingCategory) {
+                if (isset($category['id'])) {
+                    $existingCategory = Category::find($category['id']);
                     return $existingCategory->id; // Return the existing category ID
                 }
 
                 // Create a new category if it does not exist
                 $newCategory = Category::create([
                     'label' => $category['label'],
+                    'created_by' => auth()->id(),
                 ]);
 
                 return $newCategory->id; // Return the new category ID

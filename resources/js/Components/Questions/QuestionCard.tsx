@@ -81,8 +81,8 @@ export default function QuestionCard({
   return (
     <Card
       className={clsxm(
-        'relative mb-6 border px-5 py-4',
-        isCorrect ? 'border-success' : 'border-transparent',
+        'relative mb-6 px-5 py-4',
+        isCorrect ? 'border border-success' : '',
       )}
     >
       <div className='absolute right-6 top-0 rounded-b-xl bg-primary-50 px-3 py-4 md:px-4 md:py-5'>

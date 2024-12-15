@@ -25,6 +25,9 @@ export type QuestionListFilter = {
   search: string
   category: string | null
   page: number
+  sort: string | null
+  answer: string | null
+  education: string | null
 }
 
 export type QuestionList = {

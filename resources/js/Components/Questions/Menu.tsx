@@ -2,7 +2,7 @@ import { Listbox, ListboxItem } from '@nextui-org/react'
 import { FaListUl } from 'react-icons/fa6'
 import { FaArrowUp } from 'react-icons/fa'
 import { BsPersonLinesFill } from 'react-icons/bs'
-import ListBoxWrapper from './ListBoxWrapper'
+import ListBoxWrapper from '../ListBoxWrapper'
 
 function Menu() {
   return (

@@ -29,8 +29,6 @@ class QuestionApiController extends Controller
      */
     public function index(Request $request)
     {
-        // return $this->questionService->getListQuestion($request);
-
         $questions = $this->questionService->getListQuestion($request);
         return response()->json([
             'message' => __('questions.index.success'),
@@ -118,7 +116,6 @@ class QuestionApiController extends Controller
      */
     public function store(CreateQuestionRequest $request)
     {
-        dd($request);
         DB::beginTransaction();
         try {
             $question = $this->questionService->store($request);

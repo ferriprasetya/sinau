@@ -26,4 +26,17 @@ class CategoryService
 
         return $category;
     }
+
+
+    public function getPaginatedCategories(Request $request): array|object
+    {
+        $category = Category::query()->orderBy('created_by');
+        if ($request->has('search')) {
+            $category = $category->where('label', 'like', "%{$request->query('search')}%");
+        }
+
+        $category = $category->paginate(perPage: 10, page: $request->page ?? 1);
+
+        return $category;
+    }
 }

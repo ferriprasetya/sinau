@@ -18,7 +18,7 @@ class Category extends Model
     protected $fillable = [
         'slug',
         'label',
-        'users_id',
+        'created_by',
     ];
 
     protected $casts = [

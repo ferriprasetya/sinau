@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\Api\CategoryApiController;
+use App\Http\Controllers\Api\EducationApiController;
 use App\Http\Controllers\Api\QuestionApiController;
 use App\Http\Controllers\QuestionController;
 use App\Http\Controllers\ProfileController;
@@ -40,6 +42,10 @@ Route::group(['prefix' => 'question'], function () {
         )->name('question.answer.vote');
     });
 });
+
+
+Route::get('/categories', [CategoryApiController::class, 'getPaginatedCategories'])->name('categories.list');
+Route::get('/educations', [EducationApiController::class, 'index'])->name('educations.list');
 
 Route::get('/', function () {
     return to_route('question.index');
