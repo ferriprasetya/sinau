@@ -10,11 +10,13 @@
   "require": {
     "php": "^8.2",
     "google-gemini-php/laravel": "^1.0",
+    "google/cloud-storage": "^1.45",
     "inertiajs/inertia-laravel": "^1.0",
     "laravel/framework": "^11.9",
     "laravel/sanctum": "^4.0",
     "laravel/socialite": "^5.16",
     "laravel/tinker": "^2.9",
+    "spatie/laravel-google-cloud-storage": "^2.3",
     "tightenco/ziggy": "^2.3"
   },
   "require-dev": {

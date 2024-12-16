@@ -14,6 +14,7 @@ class QuestionService
 {
     public function __construct(
         protected GeminiService $geminiService,
+        protected StorageService $storageService,
     ) {
     }
 
@@ -145,7 +146,6 @@ class QuestionService
             'user_id' => auth()->id(),
             'title' => $validated['title'],
             'content' => $validated['content'] ?? "",
-            'image_url' => $validated['image_url'] ?? null,
             'education_id' => $validated['education_id'],
         ]);
         // Handle categories
@@ -178,6 +178,13 @@ class QuestionService
                 'question_id' => $question->id,
                 'content' => $answerContent,
             ]);
+        }
+
+        // handle image upload
+        if ($validated['image_url']) {
+            $url = $this->storageService->storeQuestionImage($request, $question);
+            $question->image_url = $url;
+            $question->save();
         }
 
         return $question;

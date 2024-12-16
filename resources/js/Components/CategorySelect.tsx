@@ -151,7 +151,7 @@ export function CategorySelect({
           onMenuClose={() => setMenuIsOpen(false)}
         />
 
-        <p className='text-[13px] text-gray-500'>
+        <p className='text-sm text-gray-500'>
           Tambahkan 1-5 kategori untuk mendeskripsikan bidang yang anda tanyakan
         </p>
       </div>
