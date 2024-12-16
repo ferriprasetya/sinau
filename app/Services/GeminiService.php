@@ -3,6 +3,8 @@
 namespace App\Services;
 
 use App\Models\Question;
+use Gemini\Data\Blob;
+use Gemini\Enums\MimeType;
 use Gemini\Laravel\Facades\Gemini;
 
 class GeminiService
@@ -10,7 +12,7 @@ class GeminiService
     /**
      * Generate answer
      */
-    public function generateAnswer(Question $question): string
+    public function generateAnswer(Question $question, string|null $image): string
     {
         $prompt = "Anda ditugaskan menjadi bot penjawab pertanyaan pada suatu forum diskusi pelajar. ";
         $education = $question->education()->get()->first()->label;
@@ -35,11 +37,32 @@ class GeminiService
             }
         }
 
+
         // language
         $prompt .= " Untuk mempermudah, gunakan bahasa sesuai dengan bahasa pertanyaan. ";
 
         // additional instruction
         $prompt .= " harap jawab pertanyaan berikut dengan maksimal kurang lebih 200 kata dan dalam satu paragraf, jawab langsung pada inti jawabannya. apabila pertanyaan tersebut tergolong mudah, jawab dengan jawaban singkat dan mudah dimengerti";
+
+        // handle image
+
+        if ($image) {
+            $prompt .= " Berikut gambar yang dapat membantu anda menjawab pertanyaan diatas.";
+
+            $media = new Blob(
+                mimeType: MimeType::IMAGE_JPEG,
+                data: base64_encode(
+                    file_get_contents($image)
+                )
+            );
+
+            // generate the answer with image
+            $answer = Gemini::geminiFlash()->generateContent([
+                $prompt,
+                $media
+            ])->text();
+            return $answer;
+        }
 
         // generate the answer
         $answer = Gemini::geminiFlash()->generateContent($prompt)->text();

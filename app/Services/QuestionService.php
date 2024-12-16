@@ -172,7 +172,7 @@ class QuestionService
 
         // insert AI answer
         if ($validated['ai_answer']) {
-            $answerContent = $this->geminiService->generateAnswer($question);
+            $answerContent = $this->geminiService->generateAnswer($question, $validated['image_url']);
 
             Answer::create([
                 'question_id' => $question->id,
