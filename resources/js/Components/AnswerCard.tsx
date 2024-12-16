@@ -4,9 +4,10 @@ import {
   CardBody,
   CardFooter,
   Image,
+  Textarea,
 } from '@nextui-org/react'
 import { FaArrowDown, FaArrowUp } from 'react-icons/fa'
-import { FaBrain, FaCheck } from 'react-icons/fa6'
+import { FaBrain, FaCheck, FaPenToSquare } from 'react-icons/fa6'
 import Typography from './Typography'
 
 import { PiWarningCircleFill } from 'react-icons/pi'
@@ -15,6 +16,9 @@ import { Answer } from '@/types/question'
 import clsxm from '@/lib/clsxm'
 import { IoPersonCircle } from 'react-icons/io5'
 import { HiMiniAcademicCap } from 'react-icons/hi2'
+import { useForm, usePage } from '@inertiajs/react'
+import { Button } from './Button'
+import { mapAnswerCreatePayload } from '@/services/questions/QuestionMapper'
 
 interface AnswerCardProps {
   answer: Answer
@@ -22,6 +26,7 @@ interface AnswerCardProps {
   markAsCorrect?: (_answer: Answer) => void
   onClickUpvote?: (_questionId: number) => void
   onClickDownvote?: (_questionId: number) => void
+  onGetListAnswer?: () => void
 }
 
 export default function AnswerCard({
@@ -35,16 +40,45 @@ export default function AnswerCard({
     user,
     isUpvoted,
     isDownvoted,
+    questionId,
   },
   answer,
   ableToCorrect = false,
   markAsCorrect = () => {},
   onClickUpvote = () => {},
   onClickDownvote = () => {},
+  onGetListAnswer = () => {},
 }: AnswerCardProps) {
   const [isReadMore, setIsReadMore] = useState(false)
   const toggleReadMore = () => {
     setIsReadMore(!isReadMore)
+  }
+  const { auth } = usePage().props as any
+  const userId = auth.user?.id
+  const {
+    data: answerRequest,
+    setData: setAnswerRequest,
+    put: submitAnswer,
+    processing: isLoadingSubmitAnswer,
+    reset: resetAnswerRequest,
+    transform: transformEditRequest,
+  } = useForm({
+    userId,
+    questionId,
+    content,
+  })
+
+  const submitEditAnswer = () => {
+    transformEditRequest((data) => {
+      return mapAnswerCreatePayload(data)
+    })
+    submitAnswer(route('question.answer.update', { id }), {
+      preserveScroll: true,
+      onFinish: () => {
+        resetAnswerRequest()
+        onGetListAnswer()
+      },
+    })
   }
 
   const [totalUpvote, setTotalUpvote] = useState(upvote)
@@ -79,6 +113,9 @@ export default function AnswerCard({
       (isDownvoted && totalDownvote == downvote) || totalDownvote > downvote,
     [totalDownvote, isDownvoted, downvote],
   )
+
+  const ableToEdit = ableToCorrect && answer.userId === auth.user?.id
+  const [editMode, setEditMode] = useState(false)
 
   return (
     <Card
@@ -188,98 +225,143 @@ export default function AnswerCard({
               />
             </div>
           )} */}
-          <div className=''>
-            <p className='text-lg md:text-medium'>
-              {content.length > 300 && !isReadMore ? (
-                <>
+          {editMode ? (
+            <Textarea
+              variant='flat'
+              className='h-auto w-full rounded-lg'
+              defaultValue={answerRequest.content}
+              value={answerRequest.content}
+              onChange={(e) => setAnswerRequest('content', e.target.value)}
+            ></Textarea>
+          ) : (
+            <div className=''>
+              <p className='text-lg md:text-medium'>
+                {content.length > 300 && !isReadMore ? (
+                  <>
+                    <Typography variant='bl' weight='regular'>
+                      {content.slice(0, 300)}...
+                    </Typography>
+                    <br />
+                    <Typography
+                      onClick={() => toggleReadMore()}
+                      variant='bl'
+                      weight='regular'
+                      className='cursor-pointer text-primary-500'
+                    >
+                      Baca Selengkapnya
+                    </Typography>
+                  </>
+                ) : (
                   <Typography variant='bl' weight='regular'>
-                    {content.slice(0, 300)}...
+                    {content}
                   </Typography>
-                  <br />
-                  <Typography
-                    onClick={() => toggleReadMore()}
-                    variant='bl'
-                    weight='regular'
-                    className='cursor-pointer text-primary-500'
-                  >
-                    Baca Selengkapnya
-                  </Typography>
-                </>
-              ) : (
-                <Typography variant='bl' weight='regular'>
-                  {content}
-                </Typography>
-              )}
-            </p>
-          </div>
+                )}
+              </p>
+            </div>
+          )}
         </div>
       </CardBody>
-      <CardFooter className='flex flex-col items-start justify-between gap-4 rounded-3xl p-0 px-2 sm:flex-row sm:items-center'>
-        <div className='order-2 flex items-center sm:order-1'>
-          <button
-            className={clsxm(
-              'group mr-2 flex items-center rounded-xl border px-2 py-1 transition-all',
-              checkIsUpvoted
-                ? 'bg-primary-500 hover:opacity-80'
-                : 'bg-primary-50 hover:border-primary-500',
-            )}
-            onClick={handleUpvote}
-          >
-            <FaArrowUp
+      <CardFooter
+        className={`flex flex-col items-start ${editMode ? 'justify-end' : 'justify-between'} gap-4 rounded-3xl p-0 px-2 sm:flex-row sm:items-center`}
+      >
+        {!editMode && (
+          <div className='order-2 flex items-center sm:order-1'>
+            <button
               className={clsxm(
-                'h-3 group-hover:animate-bounce',
-                checkIsUpvoted ? 'fill-primary-50' : 'fill-primary-500',
+                'group mr-2 flex items-center rounded-xl border px-2 py-1 transition-all',
+                checkIsUpvoted
+                  ? 'bg-primary-500 hover:opacity-80'
+                  : 'bg-primary-50 hover:border-primary-500',
               )}
-            />
-            <p
-              className={clsxm(
-                'text-sm font-medium',
-                checkIsUpvoted ? 'text-primary-50' : 'text-primary-500',
-              )}
+              onClick={handleUpvote}
             >
-              Dukung
-            </p>
-            <span
+              <FaArrowUp
+                className={clsxm(
+                  'h-3 group-hover:animate-bounce',
+                  checkIsUpvoted ? 'fill-primary-50' : 'fill-primary-500',
+                )}
+              />
+              <p
+                className={clsxm(
+                  'text-sm font-medium',
+                  checkIsUpvoted ? 'text-primary-50' : 'text-primary-500',
+                )}
+              >
+                Dukung
+              </p>
+              <span
+                className={clsxm(
+                  'mx-1 text-sm font-medium',
+                  checkIsUpvoted ? 'text-neutral-300' : 'text-neutral-600',
+                )}
+              >
+                |{' '}
+              </span>
+              <span
+                className={clsxm(
+                  'text-xs font-medium md:text-sm',
+                  checkIsUpvoted ? 'text-neutral-300' : 'text-neutral-600',
+                )}
+              >
+                {totalUpvote}
+              </span>
+            </button>
+            <button
               className={clsxm(
-                'mx-1 text-sm font-medium',
-                checkIsUpvoted ? 'text-neutral-300' : 'text-neutral-600',
+                'group flex items-center rounded-xl border px-2 py-1',
+                checkIsDownvoted
+                  ? 'bg-neutral-500 text-foreground-50 hover:opacity-80'
+                  : 'bg-foreground-50 text-neutral-600 hover:border-neutral-500',
               )}
+              onClick={handleDownvote}
             >
-              |{' '}
-            </span>
-            <span
-              className={clsxm(
-                'text-xs font-medium md:text-sm',
-                checkIsUpvoted ? 'text-neutral-300' : 'text-neutral-600',
-              )}
+              <FaArrowDown
+                className={clsxm(
+                  'h-3 group-hover:animate-bounce',
+                  checkIsDownvoted ? 'fill-foreground-50' : 'fill-neutral-700',
+                )}
+              />
+              <span className='mx-1 text-sm font-medium'>| </span>
+              <span className='text-xs font-medium md:text-sm'>
+                {totalDownvote}
+              </span>
+            </button>
+          </div>
+        )}
+        {ableToEdit ? (
+          !editMode ? (
+            <button
+              onClick={() => setEditMode(!editMode)}
+              className='order-1 flex items-center gap-1 text-sm font-medium text-neutral-500 sm:order-2'
             >
-              {totalUpvote}
-            </span>
+              <FaPenToSquare className='h-5 w-5' /> Edit Jawaban
+            </button>
+          ) : (
+            <div className='order-1 flex gap-3 sm:order-2'>
+              <Button
+                isDisabled={isLoadingSubmitAnswer}
+                isLoading={isLoadingSubmitAnswer}
+                onClick={() => {
+                  submitEditAnswer()
+                  setEditMode(false)
+                }}
+              >
+                Edit Jawaban
+              </Button>
+              <Button
+                color='default'
+                variant='bordered'
+                onClick={() => setEditMode(false)}
+              >
+                Batalkan
+              </Button>
+            </div>
+          )
+        ) : (
+          <button className='order-1 flex items-center gap-1 text-sm font-medium text-neutral-500 sm:order-2'>
+            <PiWarningCircleFill className='h-5 w-5' /> Laporkan Jawaban
           </button>
-          <button
-            className={clsxm(
-              'group flex items-center rounded-xl border px-2 py-1',
-              checkIsDownvoted
-                ? 'bg-neutral-500 text-foreground-50 hover:opacity-80'
-                : 'bg-foreground-50 text-neutral-600 hover:border-neutral-500',
-            )}
-            onClick={handleDownvote}
-          >
-            <FaArrowDown
-              className={clsxm(
-                'h-3 group-hover:animate-bounce',
-                checkIsDownvoted ? 'fill-foreground-50' : 'fill-neutral-700',
-              )}
-            />
-            <span className='mx-1 text-sm font-medium'>| </span>
-            <span className='text-xs font-medium md:text-sm'>
-              {totalDownvote}
-            </span>
-          </button>
-        </div>
-        <button className='order-1 flex items-center gap-1 text-sm font-medium text-neutral-500 sm:order-2'>
-          <PiWarningCircleFill className='h-5 w-5' /> Laporkan Jawaban
-        </button>
+        )}
       </CardFooter>
     </Card>
   )

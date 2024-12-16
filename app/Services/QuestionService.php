@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Http\Requests\Question\CreateQuestionRequest;
+use App\Http\Requests\Question\UpdateQuestionRequest;
 use App\Models\Answer;
 use App\Models\Category;
 use App\Models\Question;
@@ -166,6 +167,42 @@ class QuestionService
 
         return $question;
     }
+
+    public function update(UpdateQuestionRequest $request, string $id)
+    {
+        $validated = $request->validated();
+        $question = Question::find($id);
+        $question->update([
+            'title' => $validated['title'],
+            'content' => $validated['content'] ?? "",
+            'image_url' => $validated['image_url'] ?? null,
+            'education_id' => $validated['education_id'],
+        ]);
+        // Handle categories
+        if (isset($validated['categories'])) {
+            $categoryIds = collect($validated['categories'])->map(function ($category) {
+                // Check if the category exists
+                if (isset($category['id'])) {
+                    $existingCategory = Category::find($category['id']);
+                    return $existingCategory->id; // Return the existing category ID
+                }
+
+                // Create a new category if it does not exist
+                $newCategory = Category::create([
+                    'label' => $category['label'],
+                    'created_by' => auth()->id(),
+                ]);
+
+                return $newCategory->id;
+            })->filter(); // Filter out null values
+
+            // Sync categories with the question
+            $question->categories()->sync($categoryIds);
+        }
+
+        return $question;
+    }
+
 
     public function voteQuestion(string $questionId, bool $upvote)
     {

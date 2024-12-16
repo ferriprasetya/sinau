@@ -59,9 +59,19 @@ export type Answer = {
 }
 
 export type QuestionCreateRequest = {
+  id?: string
   title: string
   description: string
   categories: Category[]
   education: Education | null
   imageUrl?: string
+}
+export type QuestionEditRequest = {
+  id?: string
+  title: string
+  description: string
+  categories: Category[]
+  education: Education | null
+  imageUrl?: string
+  education_id?: string
 }

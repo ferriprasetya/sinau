@@ -133,3 +133,13 @@ export const mapQuestionCreatePayload = (data: QuestionCreateRequest) => {
 
   return convertObjectCamelToSnakeCase(payload)
 }
+
+export const mapAnswerCreatePayload = (data: any) => {
+  const payload = {
+    content: data.content,
+    questionId: data.questionId,
+    userId: data.userId,
+  }
+
+  return convertObjectCamelToSnakeCase(payload)
+}

@@ -13,6 +13,7 @@ import { Question } from '@/types/question'
 import { IoPersonCircle } from 'react-icons/io5'
 import { HiMiniAcademicCap } from 'react-icons/hi2'
 import clsxm from '@/lib/clsxm'
+import { Link, usePage } from '@inertiajs/react'
 
 interface QuestionCardProps {
   question: Question
@@ -73,6 +74,8 @@ export default function QuestionCardDetail({
       (isDownvoted && totalDownvote == downvote) || totalDownvote > downvote,
     [totalDownvote, isDownvoted, downvote],
   )
+
+  const { auth } = usePage().props as any
 
   return (
     <Card className='relative mb-6 px-5 py-4'>
@@ -210,11 +213,14 @@ export default function QuestionCardDetail({
             </span>
           </button>
         </div>
-        {/* {currentUser.id === user.id && ( */}
-        <button className='order-1 flex items-center gap-1 text-sm font-medium text-neutral-500 sm:order-2'>
-          <FaPenToSquare className='h-5 w-5' /> Edit Pertanyaan
-        </button>
-        {/* )} */}
+        {auth.user.id === user.id && (
+          <Link
+            href={route('question.edit', id)}
+            className='order-1 flex items-center gap-1 text-sm font-medium text-neutral-500 sm:order-2'
+          >
+            <FaPenToSquare className='h-5 w-5' /> Edit Pertanyaan
+          </Link>
+        )}
       </CardFooter>
     </Card>
   )

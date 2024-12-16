@@ -23,6 +23,14 @@ Route::group(['prefix' => 'question'], function () {
             '/',
             [QuestionController::class, 'store']
         )->name('question.store');
+        Route::get(
+            '/edit/{questionId}',
+            [QuestionController::class, 'edit']
+        )->name('question.edit');
+        Route::patch(
+            '/{questionId}/update',
+            [QuestionController::class, 'update']
+        )->name('question.update');
         Route::post(
             '/vote',
             [QuestionApiController::class, 'voteQuestion']
@@ -32,6 +40,10 @@ Route::group(['prefix' => 'question'], function () {
             '/answer',
             [QuestionController::class, 'createAnswer']
         )->name('question.answer');
+        Route::put(
+            '/answer/{answerId}/edit',
+            [QuestionController::class, 'UpdateAnswer']
+        )->name('question.answer.update');
         Route::patch(
             '/answer/{answerId}/correct',
             [QuestionController::class, 'markCorrectAnswer']
