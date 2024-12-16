@@ -137,13 +137,14 @@ class QuestionApiController extends Controller
     {
         DB::beginTransaction();
         try {
-            $question = $this->questionService->voteQuestion($request->question_id, $request->is_upvote);
+            $question = $this->questionService->voteQuestion($request);
             DB::commit();
             return response()->json([
                 'message' => __('question.vote.success'),
                 'data' => $question
             ], 201);
         } catch (Throwable $e) {
+            dd($e->getMessage());
             DB::rollBack();
             return response()->json([
                 'message' => __('question.vote.failed'),
@@ -155,7 +156,7 @@ class QuestionApiController extends Controller
     {
         DB::beginTransaction();
         try {
-            $answer = $this->answerService->voteAnswer($request->answer_id, $request->is_upvote);
+            $answer = $this->answerService->voteAnswer($request);
             DB::commit();
             return response()->json([
                 'message' => __('answer.vote.success'),
