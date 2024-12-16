@@ -51,13 +51,16 @@ class QuestionController extends Controller
     {
         DB::beginTransaction();
         try {
-            $this->questionService->store($request);
+            $question = $this->questionService->store($request);
             DB::commit();
+            return Redirect::route('question.show', ['slug' => $question->slug]);
         } catch (Throwable $e) {
             DB::rollBack();
+            dd($e->getMessage());
+            return Redirect::route('question.create')->with('error', $e->getMessage());
         }
-        return Redirect::route('home');
     }
+
     // Show the edit question form
     public function edit($id)
     {

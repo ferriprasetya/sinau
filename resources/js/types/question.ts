@@ -65,6 +65,7 @@ export type QuestionCreateRequest = {
   categories: Category[]
   education: Education | null
   imageUrl?: string
+  aiAnswer?: boolean
 }
 export type QuestionEditRequest = {
   id?: string

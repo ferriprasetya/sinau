@@ -104,19 +104,21 @@ export function mapQuestionAnswers(response: any): Answer[] {
           questionId: item.question_id,
           isUpvoted: item.is_upvoted,
           isDownvoted: item.is_downvoted,
-          user: {
-            id: item.user.id,
-            name: item.user.name,
-            email: item.user.email,
-            profileUrl: item.user.profile_url,
-            point: item.user.point,
-            badge: {
-              id: item.user.badge?.id,
-              label: item.user.badge?.label,
-              imageUrl: item.user.badge?.image_url,
-              slug: item.user.badge?.slug,
-            },
-          },
+          user: item.user?.id
+            ? {
+                id: item.user.id,
+                name: item.user.name,
+                email: item.user.email,
+                profileUrl: item.user.profile_url,
+                point: item.user.point,
+                badge: {
+                  id: item.user.badge?.id,
+                  label: item.user.badge?.label,
+                  imageUrl: item.user.badge?.image_url,
+                  slug: item.user.badge?.slug,
+                },
+              }
+            : undefined,
         }),
       )
     : []
@@ -129,6 +131,7 @@ export const mapQuestionCreatePayload = (data: QuestionCreateRequest) => {
     categories: data.categories,
     educationId: data.education?.id,
     imageUrl: data.imageUrl,
+    aiAnswer: data.aiAnswer,
   }
 
   return convertObjectCamelToSnakeCase(payload)

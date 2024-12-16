@@ -27,6 +27,7 @@ class CreateQuestionRequest extends FormRequest
             'image_url' => 'nullable|string',
             'categories' => 'required|array',
             'education_id' => 'required|uuid|exists:educations,id',
+            'ai_answer' => 'nullable|boolean',
         ];
     }
     
