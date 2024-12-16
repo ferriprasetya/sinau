@@ -20,9 +20,10 @@ export const getQuestionDetail = async (slug: string) => {
   return mapQuestionDetail(response?.data)
 }
 
-export const getQuestionAnswers = async (questionId: string) => {
+export const getQuestionAnswers = async (questionId: string, sort?: string) => {
+  const queryString = buildParams({ sort })
   const response = await window.axios.get(
-    `/api/questions/${questionId}/answers`,
+    `/api/questions/${questionId}/answers${queryString}`,
   )
   return mapQuestionAnswers(response?.data?.data)
 }

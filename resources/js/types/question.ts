@@ -32,6 +32,10 @@ export type QuestionListFilter = {
   menu?: string
 }
 
+export type AnswerSort = {
+  sort: string
+}
+
 export type QuestionList = {
   data: Question[]
   currentPage: number

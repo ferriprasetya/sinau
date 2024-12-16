@@ -14,8 +14,7 @@ class QuestionService
 {
     public function __construct(
         protected GeminiService $geminiService,
-    ) {
-    }
+    ) {}
 
     public function getListQuestion(Request $request): array|object
     {
@@ -116,14 +115,21 @@ class QuestionService
         ];
     }
 
-    public function getQuestionAnswers(string $questionId): array|object
+    public function getQuestionAnswers(Request $request, string $questionId): array|object
     {
         $answers = Answer::with('user.badge')
-            ->where('question_id', $questionId)
-            ->orderBy('is_correct', 'desc')
-            ->orderBy('upvote', 'desc')
-            ->orderBy('created_at', 'desc')
-            ->get();
+            ->where('question_id', $questionId);
+
+        // sorting
+        $answers = match ($request->query('sort')) {
+            'most-like' => $answers->orderBy('upvote', 'desc'),
+            'lowest-like' => $answers->orderBy('downvote', 'desc'),
+            'latest' => $answers->orderBy('created_at', 'desc'),
+            'oldest' => $answers->orderBy('created_at', 'asc'),
+            default => $answers->orderBy('created_at', 'desc')->orderBy('upvote', 'desc'),
+        };
+
+        $answers = $answers->get();
 
         $userId = auth()->id();
         return $answers->isNotEmpty() ? $answers->map(function ($answer) use ($userId) {
