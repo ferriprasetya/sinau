@@ -60,7 +60,6 @@ class QuestionController extends Controller
             return Redirect::route('question.show', ['slug' => $question->slug]);
         } catch (Throwable $e) {
             DB::rollBack();
-            dd($e->getMessage());
             return Redirect::route('question.create')->with('error', $e->getMessage());
         }
     }

@@ -189,7 +189,7 @@ class QuestionService
         }
 
         // handle image upload
-        if ($validated['image_url']) {
+        if (isset($validated['image_url'])) {
             $url = $this->storageService->storeQuestionImage($request, $question);
             $question->image_url = $url;
             $question->save();
