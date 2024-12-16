@@ -21,8 +21,7 @@ class QuestionApiController extends Controller
     public function __construct(
         protected QuestionService $questionService,
         protected AnswerService $answerService,
-    ) {
-    }
+    ) {}
 
     /**
      * Display a listing of the resource.
@@ -48,9 +47,9 @@ class QuestionApiController extends Controller
         ], 200);
     }
 
-    public function getQuestionAnswers(string $questionId)
+    public function getQuestionAnswers(Request $request, string $questionId)
     {
-        $answers = $this->questionService->getQuestionAnswers($questionId);
+        $answers = $this->questionService->getQuestionAnswers($request, $questionId);
         return response()->json([
             'message' => __('questions.answer.show.success'),
             'data' => $answers

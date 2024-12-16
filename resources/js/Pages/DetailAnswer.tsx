@@ -34,22 +34,24 @@ function DetailAnswer({ question, answers, educations }: any) {
 
   const sortAAnswers = [
     {
-      id: 1,
+      id: 'oldest',
       text: 'Terlama',
     },
     {
-      id: 2,
+      id: 'latest',
       text: 'Terbaru',
     },
     {
-      id: 3,
+      id: 'most-like',
       text: 'Paling Banyak Disukai',
     },
     {
-      id: 4,
+      id: 'lowest-like',
       text: 'Paling Sedikit Disukai',
     },
   ]
+
+  const [sort, setSort] = useState('')
 
   const [isAnswerQuestion, setIsAnswerQuestion] = useState(false)
   const toggleAnswerQuestion = () => {
@@ -97,11 +99,17 @@ function DetailAnswer({ question, answers, educations }: any) {
   }
 
   const [_isLoadingAnswers, setIsLoadingAnswers] = useState(false)
+
   const onGetListAnswer = async () => {
     setIsLoadingAnswers(true)
-    const answers = await getQuestionAnswers(questionData.id)
+    const answers = await getQuestionAnswers(questionData.id, sort)
     setAnswersData(answers)
     setIsLoadingAnswers(false)
+  }
+
+  const onSortChange = (e: any) => {
+    setSort(e.target.value)
+    onGetListAnswer()
   }
 
   const { patch: submitMarkAnswer } = useForm()
@@ -197,6 +205,7 @@ function DetailAnswer({ question, answers, educations }: any) {
               classNames={{
                 trigger: 'bg-white',
               }}
+              onChange={(e) => onSortChange(e)}
             >
               {sortAAnswers.map((sortAnswer) => (
                 <SelectItem key={sortAnswer.id}>{sortAnswer.text}</SelectItem>
