@@ -17,7 +17,8 @@ class QuestionService
     public function __construct(
         protected GeminiService $geminiService,
         protected StorageService $storageService,
-    ) {}
+    ) {
+    }
 
     public function getListQuestion(Request $request): array|object
     {
@@ -180,7 +181,7 @@ class QuestionService
 
         // insert AI answer
         if ($validated['ai_answer']) {
-            $answerContent = $this->geminiService->generateAnswer($question, $validated['image_url']);
+            $answerContent = $this->geminiService->generateAnswer($question, $validated['image_url'] ?? null);
 
             Answer::create([
                 'question_id' => $question->id,
