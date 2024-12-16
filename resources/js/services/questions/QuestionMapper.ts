@@ -25,6 +25,7 @@ export function mapQuestionList(response: any): QuestionList {
             isCorrect: item.is_correct,
             isUpvoted: item.is_upvoted,
             isDownvoted: item.is_downvoted,
+            educationId: item.education_id,
             createdAt: dayjs(item.created_at).fromNow(true) + ' yang lalu',
             updatedAt: dayjs(item.created_at).fromNow(true) + ' yang lalu',
             user: {
@@ -66,6 +67,7 @@ export function mapQuestionDetail(response: any): Question {
     isCorrect: response.is_correct,
     isUpvoted: response.is_upvoted,
     isDownvoted: response.is_downvoted,
+    educationId: response.education_id,
     createdAt: dayjs(response.created_at).fromNow(true) + ' yang lalu',
     updatedAt: dayjs(response.updated_at).fromNow(true) + ' yang lalu',
     user: {

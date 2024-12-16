@@ -19,7 +19,13 @@ import { HiMiniAcademicCap } from 'react-icons/hi2'
 import clsxm from '@/lib/clsxm'
 import { useMemo, useState } from 'react'
 
+interface Education {
+  id: string
+  label: string
+}
+
 interface QuestionCardProps {
+  educations: Education[]
   question: Question
   onClickUpvote?: (_questionId: string) => void
   onClickDownvote?: (_questionId: string) => void
@@ -41,7 +47,9 @@ export default function QuestionCard({
     totalAnswer,
     isUpvoted,
     isDownvoted,
+    educationId,
   },
+  educations,
   onClickUpvote = () => {},
   onClickDownvote = () => {},
 }: QuestionCardProps) {
@@ -90,8 +98,17 @@ export default function QuestionCard({
       </div>
       <Link href={`/question/${slug}`}>
         <CardHeader className='flex-col items-start px-4 pb-0 pt-2'>
-          <h1 className='max-w-[90%] text-lg font-semibold text-foreground-500 md:text-2xl'>
-            {title}
+          <h1 className='flex max-w-[90%] items-center text-lg font-semibold text-foreground-500 md:text-2xl'>
+            {title}{' '}
+            <div className='mx-3 h-1.5 w-1.5 rounded-full bg-primary-600'></div>
+            <div>
+              <div className='rounded-lg bg-gradient-primary px-2 py-1 text-xs font-medium text-primary-50'>
+                {
+                  educations.find((education) => education.id === educationId)
+                    ?.label
+                }
+              </div>
+            </div>
           </h1>
           <div className='flex flex-wrap'>
             {categories?.map((category) => (

@@ -1,3 +1,4 @@
+import BackButton from '@/Components/BackButton'
 import { Button } from '@/Components/Button'
 import { CategorySelect } from '@/Components/CategorySelect'
 import FilterMakeQuestion from '@/Components/FilterMakeQuestion'
@@ -77,12 +78,15 @@ function EditQuestion({ question, educations }: EditQuestionProps) {
       <Head title='Edit Pertanyaan' />
       <div className='container mx-auto mt-8 w-full max-w-[1024px]'>
         <div className='space-y-8 px-4'>
-          <Typography
-            variant='h5'
-            className='font-semibold text-foreground-500'
-          >
-            Edit Pertanyaan
-          </Typography>
+          <div className='flex justify-between space-y-3'>
+            <BackButton />
+            <Typography
+              variant='h5'
+              className='font-semibold text-foreground-500'
+            >
+              Edit Pertanyaan
+            </Typography>
+          </div>
           <FilterMakeQuestion
             isComplex={isComplex}
             setIsComplex={setIsComplex}

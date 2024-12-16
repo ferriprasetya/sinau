@@ -16,7 +16,7 @@ import QuestionCardLoading from '@/Components/Questions/QuestionCardLoading'
 import { FaArrowUp, FaListUl } from 'react-icons/fa'
 import { BsPersonLinesFill } from 'react-icons/bs'
 
-export default function QuestionListPage({ questions }: any) {
+export default function QuestionListPage({ questions, educations }: any) {
   const selectedMenu = new URLSearchParams(window.location.search).get('menu')
   const searchParams = new URLSearchParams(window.location.search).get('search')
   const [listQuestion, setListQuestion] = useState<QuestionList>({
@@ -170,6 +170,7 @@ export default function QuestionListPage({ questions }: any) {
                 <QuestionCard
                   key={question.id}
                   question={question}
+                  educations={educations}
                   onClickUpvote={onUpvoteQuestion}
                   onClickDownvote={onDownvoteQuestion}
                 />
