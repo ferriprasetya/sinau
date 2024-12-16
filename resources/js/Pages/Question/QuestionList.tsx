@@ -18,13 +18,14 @@ import { BsPersonLinesFill } from 'react-icons/bs'
 
 export default function QuestionListPage({ questions }: any) {
   const selectedMenu = new URLSearchParams(window.location.search).get('menu')
+  const searchParams = new URLSearchParams(window.location.search).get('search')
   const [listQuestion, setListQuestion] = useState<QuestionList>({
     data: [],
     currentPage: 1,
     lastPage: 1,
   })
   const [filter, setFilter] = useState<QuestionListFilter>({
-    search: '',
+    search: searchParams ?? '',
     category: null,
     page: 1,
     answer: null,
@@ -132,8 +133,10 @@ export default function QuestionListPage({ questions }: any) {
 
   const selectedTitle = useMemo(
     () =>
-      menuOptions.find((option) => option.key === selectedMenu)?.label ??
-      'Semua Pertanyaan',
+      filter.search
+        ? `Hasil pencarian: ${filter.search}`
+        : (menuOptions.find((option) => option.key === selectedMenu)?.label ??
+          'Semua Pertanyaan'),
     [menuOptions, selectedMenu],
   )
   return (

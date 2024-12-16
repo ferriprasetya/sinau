@@ -35,8 +35,8 @@ class QuestionService
         }
 
         // filter search
-        if ($request->has('q')) {
-            $questions = $questions->where('title', 'like', "%{$request->query('q')}%")->orWhere('content', 'like', "%{$request->query('q')}%");
+        if ($request->has('search')) {
+            $questions = $questions->where('title', 'like', "%{$request->query('search')}%")->orWhere('content', 'like', "%{$request->query('search')}%");
         }
 
         // filter category

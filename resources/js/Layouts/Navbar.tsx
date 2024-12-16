@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { FormEvent, useState } from 'react'
 import {
   Navbar as NextUINavbar,
   NavbarBrand,
@@ -20,8 +20,12 @@ import { IoLogOut, IoPersonCircle, IoPersonSharp } from 'react-icons/io5'
 import { HiMiniAcademicCap } from 'react-icons/hi2'
 import ModalConfirm from '@/Components/ModalConfirm'
 import axios from 'axios'
+import { Input } from '@/Components/Input'
+import clsxm from '@/lib/clsxm'
+import { IoIosCloseCircle } from 'react-icons/io'
 
 export default function Navbar() {
+  const searchParams = new URLSearchParams(window.location.search).get('search')
   const { auth } = usePage().props as any
   const isLogin = !!auth.user
   const [isMenuOpen, setIsMenuOpen] = React.useState(false)
@@ -53,12 +57,37 @@ export default function Navbar() {
     router.reload()
   }
 
+  const [search, setSearch] = useState(searchParams ?? '')
+  const [showSearchMobile, setShowSearchMobile] = useState(!!searchParams)
+
+  const onSearch = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    processSearch()
+  }
+
+  const processSearch = (searchValue: string | null = search) => {
+    router.get(
+      route('question.index'),
+      { search: searchValue },
+      { replace: true },
+    )
+  }
+
+  const onCloseSearch = () => {
+    setShowSearchMobile(false)
+    setSearch('')
+    processSearch(null)
+  }
+
   return (
     <NextUINavbar
       onMenuOpenChange={setIsMenuOpen}
       isBlurred={false}
       isBordered
-      className='border-neutral-100 bg-neutral-50'
+      className='overflow-x-hidden border-neutral-100 bg-neutral-50'
+      classNames={{
+        wrapper: 'max-w-7xl',
+      }}
     >
       <ModalConfirm
         title='Apakah anda yakin ingin keluar?'
@@ -68,12 +97,33 @@ export default function Navbar() {
         onOpenChange={setIsConfirmLogout}
         onConfirm={onLogout}
       />
-      <NavbarContent>
-        <NavbarBrand as={Link} href='/'>
-          <Image src='/images/logo.svg' className='h-8 md:h-9' alt='Logo' />
+      <NavbarContent className={showSearchMobile ? 'max-md:!justify-end' : ''}>
+        <NavbarBrand
+          as={Link}
+          href='/'
+          className={showSearchMobile ? 'max-md:flex-grow-0' : ''}
+        >
+          <Image
+            src='/images/logo.svg'
+            className='h-8 md:h-8 lg:h-9'
+            alt='Logo'
+          />
         </NavbarBrand>
-        <div className='flex items-center gap-3'>
-          <AiOutlineSearch className='h-6 w-6 cursor-pointer text-foreground-200 md:hidden' />
+        <div className='relative z-10 flex items-center gap-3'>
+          <AiOutlineSearch
+            className={clsxm(
+              'h-6 w-6 cursor-pointer text-foreground-200 md:hidden',
+              showSearchMobile && 'hidden',
+            )}
+            onClick={() => setShowSearchMobile(!showSearchMobile)}
+          />
+          <IoIosCloseCircle
+            className={clsxm(
+              'h-6 w-6 cursor-pointer text-foreground-200 md:hidden',
+              !showSearchMobile && 'hidden',
+            )}
+            onClick={onCloseSearch}
+          />
           <NavbarMenuToggle
             aria-label={isMenuOpen ? 'Close menu' : 'Open menu'}
             className='min-h-6 text-foreground-200 md:hidden'
@@ -81,7 +131,37 @@ export default function Navbar() {
         </div>
       </NavbarContent>
 
-      <NavbarContent className='hidden gap-4 md:flex' justify='center'>
+      <NavbarContent
+        justify='start'
+        className={clsxm(
+          'transition-all md:flex xl:min-w-96',
+          showSearchMobile
+            ? 'flex max-md:absolute max-md:left-6 max-md:order-first max-md:w-2/3'
+            : 'max-md:absolute max-md:left-full',
+        )}
+      >
+        <form onSubmit={onSearch} className='w-full'>
+          <Input
+            classNames={{
+              base: 'max-w-full',
+              mainWrapper: 'h-full',
+              input: 'text-sm',
+              inputWrapper:
+                'h-full font-normal text-foreground-200 bg-white shadow-sm group-data-[focus=true]:bg-white/60 group-data-[focus=true]:shadow transition-all',
+              clearButton: 'text-foreground-200',
+            }}
+            placeholder='Cari pertanyaan'
+            size='sm'
+            startContent={
+              <AiOutlineSearch className='ml-3 h-6 w-6 text-foreground-200' />
+            }
+            value={search}
+            onValueChange={setSearch}
+          />
+        </form>
+      </NavbarContent>
+
+      <NavbarContent className='hidden gap-4 md:flex' justify='end'>
         {menuItems.map((item, index) => (
           <NavbarItem
             key={`${item.label}-${index}`}
