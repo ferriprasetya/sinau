@@ -217,6 +217,7 @@ function DetailAnswer({ question, answers }: any) {
                 markAsCorrect={markAsCorrectAnswer}
                 onClickDownvote={onDownvoteAnswer}
                 onClickUpvote={onUpvoteAnswer}
+                onGetListAnswer={onGetListAnswer}
               />
             ))
           ) : (

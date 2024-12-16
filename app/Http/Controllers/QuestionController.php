@@ -8,6 +8,8 @@ use Illuminate\Http\Request;
 use Inertia\Inertia;
 use App\Http\Requests\Question\CreateAnswerRequest;
 use App\Http\Requests\Question\CreateQuestionRequest;
+use App\Http\Requests\Question\EditAnswerRequest;
+use App\Http\Requests\Question\UpdateQuestionRequest;
 use App\Models\Education;
 use App\Services\AnswerService;
 use Illuminate\Support\Facades\DB;
@@ -20,8 +22,7 @@ class QuestionController extends Controller
     public function __construct(
         protected QuestionService $questionService,
         protected AnswerService $answerService,
-    ) {
-    }
+    ) {}
 
     /**
      * Display a listing of the resource.
@@ -57,6 +58,29 @@ class QuestionController extends Controller
         }
         return Redirect::route('home');
     }
+    // Show the edit question form
+    public function edit($id)
+    {
+        $question = Question::with('categories')->findOrFail($id);
+        $educations = Education::all();
+        return Inertia::render('Question/EditQuestion', [
+            'question' => $question,
+            'educations' => $educations,
+        ]);
+    }
+    // Update the specified question in storage.
+    public function update(UpdateQuestionRequest $request, string $id)
+    {
+        DB::beginTransaction();
+        try {
+            $answer = $this->questionService->update($request, $id);
+            DB::commit();
+        } catch (Throwable $e) {
+            DB::rollBack();
+        }
+        return Redirect::route('question.show', ['slug' => $answer->slug]);
+    }
+
     // QUESTION ANSWER
     public function createAnswer(CreateAnswerRequest $request)
     {
@@ -101,5 +125,17 @@ class QuestionController extends Controller
         return Inertia::render('Question/CreateQuestion', [
             'educations' => $educations
         ]);
+    }
+
+    public function updateAnswer(EditAnswerRequest $request, int $answerId)
+    {
+        DB::beginTransaction();
+        try {
+            $answer = $this->answerService->update($request, $answerId);
+            DB::commit();
+        } catch (Throwable $e) {
+            DB::rollBack();
+        }
+        return Redirect::route('question.show', ['slug' => $answer->question->slug]);
     }
 }

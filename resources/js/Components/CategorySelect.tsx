@@ -1,5 +1,3 @@
-'use client'
-
 import * as React from 'react'
 import AsyncCreatableSelect from 'react-select/async-creatable'
 import { X, ChevronDown } from 'lucide-react'
@@ -14,6 +12,7 @@ interface Category {
 interface CategorySelectProps {
   onChange?: (categories: Category[]) => void
   defaultCategories?: Category[]
+  selectedValue?: Category[]
 }
 
 const customStyles = {
@@ -24,15 +23,11 @@ const customStyles = {
   control: (base: any) => ({
     ...base,
     backgroundColor: '#F1F5FE',
-    // border: '1px solid #e5e7eb',
     boxShadow: '0px 0px 2px rgba(0, 0, 0, 0.1)',
     borderRadius: '0.5rem',
     padding: '0.5rem',
     border: 'none',
     color: 'rgb(168 173 195)',
-    '&:hover': {
-      // borderColor: '#e5e7eb',
-    },
     minHeight: '48px',
   }),
   placeholder: (base: any) => ({
@@ -63,34 +58,42 @@ const customStyles = {
   }),
 }
 
-// // Sample data - replace with your actual categories from API
-// const existingCategories: Category[] = [
-//   { id: '1', slug: 'pemrograman', label: 'Pemrograman' },
-//   { id: '2', slug: 'desain', label: 'Desain' },
-//   { id: '3', slug: 'marketing', label: 'Marketing' },
-//   { id: '4', slug: 'bisnis', label: 'Bisnis' },
-//   { id: '5', slug: 'teknologi', label: 'Teknologi' },
-// ]
-
 export function CategorySelect({
   onChange,
-  defaultCategories = [],
+  defaultCategories,
 }: CategorySelectProps) {
-  const [selectedCategories, setSelectedCategories] =
-    React.useState<Category[]>(defaultCategories)
+  const [selectedCategories, setSelectedCategories] = React.useState<
+    Category[]
+  >(defaultCategories || [])
+  const [availableOptions, setAvailableOptions] = React.useState<Category[]>([])
+
   const onGetListCategory = async (inputValue: string) => {
     const categories = await getListCategory(inputValue)
-    return categories
+    return categories.filter(
+      (category) =>
+        !selectedCategories.some((selected) => selected.id === category.id),
+    )
   }
 
   const loadOptions = async (inputValue: string) => {
-    return await onGetListCategory(inputValue)
+    const options = await onGetListCategory(inputValue)
+    setAvailableOptions(options)
+    if (defaultCategories) {
+      return options.filter(
+        (option) =>
+          !defaultCategories.some((selected) => selected.id === option.id),
+      )
+    }
+    return options
   }
 
   const handleChange = (newValue: any) => {
     if (newValue && selectedCategories.length < 5) {
       const updatedCategories = [...selectedCategories, newValue]
       setSelectedCategories(updatedCategories)
+      setAvailableOptions(
+        availableOptions.filter((option) => option.id !== newValue.id),
+      )
       onChange?.(updatedCategories)
     }
   }
@@ -100,6 +103,11 @@ export function CategorySelect({
       (cat) => cat.id !== categoryToRemove.id,
     )
     setSelectedCategories(updatedCategories)
+    setAvailableOptions(
+      [...availableOptions, categoryToRemove].sort((a, b) =>
+        a.label.localeCompare(b.label),
+      ),
+    )
     onChange?.(updatedCategories)
   }
 
@@ -120,11 +128,14 @@ export function CategorySelect({
           styles={customStyles}
           loadOptions={loadOptions}
           onChange={handleChange}
-          value={null}
           getOptionValue={(option: Category) => option.id}
           getOptionLabel={(option: Category) => option.label}
           placeholder='Pilih kategori'
-          noOptionsMessage={() => 'Tidak ada pilihan'}
+          noOptionsMessage={() =>
+            availableOptions.length === 0
+              ? 'Kategori sudah dipilih semua'
+              : 'Tidak ada pilihan'
+          }
           formatCreateLabel={(inputValue) => `Buat "${inputValue}"`}
           components={{
             IndicatorSeparator: () => null,

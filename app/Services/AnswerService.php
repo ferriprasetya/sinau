@@ -3,6 +3,8 @@
 namespace App\Services;
 
 use App\Http\Requests\Question\CreateAnswerRequest;
+use App\Http\Requests\Question\EditAnswerRequest;
+use App\Http\Requests\Question\UpdateQuestionRequest;
 use App\Models\Answer;
 use App\Models\Question;
 use App\Models\VoteAnswers;
@@ -16,6 +18,20 @@ class AnswerService
             'user_id' => $request->user_id,
             'question_id' => $request->question_id,
             'content' => $request->content
+        ]);
+
+        return $answer;
+    }
+
+    public function update(EditAnswerRequest $request, int $answerId)
+    {
+        $validate = $request->validated();
+        $answer = Answer::find($answerId);
+        $answer->update([
+            'content' => $validate['content'],
+            'answer_id' => $validate['question_id'],
+            'user_id' => $validate['user_id']
+
         ]);
 
         return $answer;
