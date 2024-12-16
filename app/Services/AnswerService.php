@@ -44,7 +44,7 @@ class AnswerService
         $answer = Answer::find($answerId);
         $answer->is_correct = true;
         $user = User::find($answer->user_id);
-        $user->point += 10;
+        if($user) $user->point += 10;
 
         $otherAnswer = Answer::where('question_id', $answer->question_id)->where('is_correct', true)->first();
         if ($otherAnswer) {
@@ -72,11 +72,11 @@ class AnswerService
         $question->is_correct = false;
 
         $user = User::find($answer->user_id);
-        $user->point -= 10;
+        if($user) $user->point -= 10;
 
         $answer->save();
         $question->save();
-        $user->save();
+        if($user) $user->save();
 
         return $answer;
     }
@@ -104,14 +104,14 @@ class AnswerService
                 $upvoteAnswer->delete();
 
                 $answer->upvote -= 1;
-                $user->point -= 5;
+                if($user) $user->point -= 5;
             } else {
                 $upvoteAnswer->update([
                     'is_upvote' => true
                 ]);
                 $answer->upvote += 1;
                 $answer->downvote -= 1;
-                $user->point += 5;
+                if($user) $user->point += 5;
             }
         } else {
             VoteAnswers::create([
@@ -120,10 +120,10 @@ class AnswerService
                 'is_upvote' => true
             ]);
             $answer->upvote += 1;
-            $user->point += 5;
+            if($user) $user->point += 5;
         }
         $answer->save();
-        $user->save();
+        if($user) $user->save();
         return $answer;
     }
 
@@ -147,7 +147,7 @@ class AnswerService
                 ]);
                 $answer->downvote += 1;
                 $answer->upvote -= 1;
-                $user->point -= 5;
+                if($user) $user->point -= 5;
             }
         } else {
             VoteAnswers::create([
@@ -158,7 +158,7 @@ class AnswerService
             $answer->downvote += 1;
         }
         $answer->save();
-        $user->save();
+        if($user) $user->save();
         return $answer;
     }
 }

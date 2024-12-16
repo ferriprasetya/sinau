@@ -10,13 +10,18 @@ import {
   updateQuestionVote,
 } from '@/services/questions/QuestionService'
 import { QuestionList, QuestionListFilter } from '@/types/question'
-import { Head, Link, router } from '@inertiajs/react'
+import { Head, Link, router, usePage } from '@inertiajs/react'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import QuestionCardLoading from '@/Components/Questions/QuestionCardLoading'
 import { FaArrowUp, FaListUl } from 'react-icons/fa'
 import { BsPersonLinesFill } from 'react-icons/bs'
+import ModalVoteLogin from '@/Components/Questions/ModalVoteLogin'
 
 export default function QuestionListPage({ questions, educations }: any) {
+  const { auth } = usePage().props as any
+  const isLogin = !!auth.user
+  const [showModalLogin, setShowModalLogin] = useState(false)
+
   const selectedMenu = new URLSearchParams(window.location.search).get('menu')
   const searchParams = new URLSearchParams(window.location.search).get('search')
   const [listQuestion, setListQuestion] = useState<QuestionList>({
@@ -76,10 +81,18 @@ export default function QuestionListPage({ questions, educations }: any) {
   }, [filter, onGetListQuestion])
 
   const onUpvoteQuestion = (questionId: string) => {
+    if (!isLogin) {
+      setShowModalLogin(true)
+      return
+    }
     updateQuestionVote(questionId, true)
   }
 
   const onDownvoteQuestion = (questionId: string) => {
+    if (!isLogin) {
+      setShowModalLogin(true)
+      return
+    }
     updateQuestionVote(questionId, false)
   }
 
@@ -169,6 +182,7 @@ export default function QuestionListPage({ questions, educations }: any) {
               listQuestion.data.map((question) => (
                 <QuestionCard
                   key={question.id}
+                  isLogin={isLogin}
                   question={question}
                   educations={educations}
                   onClickUpvote={onUpvoteQuestion}
@@ -192,6 +206,10 @@ export default function QuestionListPage({ questions, educations }: any) {
           </div>
         </div>
       </div>
+      <ModalVoteLogin
+        showModal={showModalLogin}
+        setShowModal={setShowModalLogin}
+      />
     </Layout>
   )
 }
