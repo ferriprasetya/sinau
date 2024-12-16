@@ -25,12 +25,14 @@ import ModalConfirm from '@/Components/ModalConfirm'
 import { Answer } from '@/types/question'
 import convertObjectCamelToSnakeCase from '@/lib/convertObjectCamelToSnakeCase'
 import BackButton from '@/Components/BackButton'
+import ModalVoteLogin from '@/Components/Questions/ModalVoteLogin'
 function DetailAnswer({ question, answers, educations }: any) {
   const { auth } = usePage().props as any
   const isLogin = !!auth.user
   const userId = auth.user?.id
   const questionData = mapQuestionDetail(question)
   const [answersData, setAnswersData] = useState(mapQuestionAnswers(answers))
+  const [showModalLogin, setShowModalLogin] = useState(false)
 
   const sortAAnswers = [
     {
@@ -133,18 +135,34 @@ function DetailAnswer({ question, answers, educations }: any) {
   }
 
   const onUpvoteAnswer = (answerId: number) => {
+    if (!isLogin) {
+      setShowModalLogin(true)
+      return
+    }
     updateAnswerVote(answerId, true)
   }
 
   const onDownvoteAnswer = (answerId: number) => {
+    if (!isLogin) {
+      setShowModalLogin(true)
+      return
+    }
     updateAnswerVote(answerId, false)
   }
 
   const onUpvoteQuestion = (questionId: string) => {
+    if (!isLogin) {
+      setShowModalLogin(true)
+      return
+    }
     updateQuestionVote(questionId, true)
   }
 
   const onDownvoteQuestion = (questionId: string) => {
+    if (!isLogin) {
+      setShowModalLogin(true)
+      return
+    }
     updateQuestionVote(questionId, false)
   }
   return (
@@ -184,6 +202,7 @@ function DetailAnswer({ question, answers, educations }: any) {
             </div>
           </div>
           <QuestionCardDetail
+            isLogin={isLogin}
             educations={educations}
             question={questionData}
             onClickDownvote={onDownvoteQuestion}
@@ -235,6 +254,7 @@ function DetailAnswer({ question, answers, educations }: any) {
               <AnswerCard
                 key={index}
                 answer={answer}
+                isLogin={isLogin}
                 ableToCorrect={userId === questionData.userId}
                 markAsCorrect={markAsCorrectAnswer}
                 onClickDownvote={onDownvoteAnswer}
@@ -264,6 +284,11 @@ function DetailAnswer({ question, answers, educations }: any) {
         />
       </div>
       <Head />
+
+      <ModalVoteLogin
+        showModal={showModalLogin}
+        setShowModal={setShowModalLogin}
+      />
     </Layout>
   )
 }

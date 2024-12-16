@@ -143,7 +143,6 @@ class QuestionApiController extends Controller
                 'data' => $question
             ], 201);
         } catch (Throwable $e) {
-            dd($e->getMessage());
             DB::rollBack();
             return response()->json([
                 'message' => __('question.vote.failed'),

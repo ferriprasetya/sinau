@@ -19,6 +19,7 @@ import CardCategory from '../CardCategory'
 interface QuestionCardProps {
   educations: { id: string; label: string }[]
   question: Question
+  isLogin?: boolean
   onClickUpvote?: (_questionId: string) => void
   onClickDownvote?: (_questionId: string) => void
 }
@@ -39,6 +40,7 @@ export default function QuestionCardDetail({
     educationId,
   },
   educations,
+  isLogin = false,
   onClickUpvote = () => {},
   onClickDownvote = () => {},
 }: QuestionCardProps) {
@@ -52,6 +54,9 @@ export default function QuestionCardDetail({
 
   const handleUpvote = () => {
     onClickUpvote(id)
+    if (!isLogin) {
+      return
+    }
     if (checkIsUpvoted) {
       setTotalUpvote(Math.max(totalUpvote - 1, 0))
       return
@@ -62,6 +67,9 @@ export default function QuestionCardDetail({
 
   const handleDownvote = () => {
     onClickDownvote(id)
+    if (!isLogin) {
+      return
+    }
     if (checkIsDownvoted) {
       setTotalDownvote(Math.max(totalDownvote - 1, 0))
     }
@@ -232,7 +240,7 @@ export default function QuestionCardDetail({
             </span>
           </button>
         </div>
-        {auth.user.id === user.id && (
+        {auth.user?.id === user.id && (
           <Link
             href={route('question.edit', id)}
             className='order-1 flex items-center gap-1 text-sm font-medium text-neutral-500 sm:order-2'

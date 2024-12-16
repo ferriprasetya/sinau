@@ -27,6 +27,7 @@ interface Education {
 interface QuestionCardProps {
   educations: Education[]
   question: Question
+  isLogin?: boolean
   onClickUpvote?: (_questionId: string) => void
   onClickDownvote?: (_questionId: string) => void
 }
@@ -50,6 +51,7 @@ export default function QuestionCard({
     educationId,
   },
   educations,
+  isLogin = false,
   onClickUpvote = () => {},
   onClickDownvote = () => {},
 }: QuestionCardProps) {
@@ -58,6 +60,9 @@ export default function QuestionCard({
 
   const handleUpvote = () => {
     onClickUpvote(id)
+    if (!isLogin) {
+      return
+    }
     if (checkIsUpvoted) {
       setTotalUpvote(Math.max(totalUpvote - 1, 0))
       return
@@ -68,6 +73,9 @@ export default function QuestionCard({
 
   const handleDownvote = () => {
     onClickDownvote(id)
+    if (!isLogin) {
+      return
+    }
     if (checkIsDownvoted) {
       setTotalDownvote(Math.max(totalDownvote - 1, 0))
     }

@@ -22,6 +22,7 @@ import { mapAnswerCreatePayload } from '@/services/questions/QuestionMapper'
 
 interface AnswerCardProps {
   answer: Answer
+  isLogin?: boolean
   ableToCorrect?: boolean
   markAsCorrect?: (_answer: Answer) => void
   onClickUpvote?: (_questionId: number) => void
@@ -43,6 +44,7 @@ export default function AnswerCard({
     questionId,
   },
   answer,
+  isLogin = false,
   ableToCorrect = false,
   markAsCorrect = () => {},
   onClickUpvote = () => {},
@@ -86,6 +88,9 @@ export default function AnswerCard({
 
   const handleUpvote = () => {
     onClickUpvote(id)
+    if (!isLogin) {
+      return
+    }
     if (checkIsUpvoted) {
       setTotalUpvote(Math.max(totalUpvote - 1, 0))
       return
@@ -96,6 +101,9 @@ export default function AnswerCard({
 
   const handleDownvote = () => {
     onClickDownvote(id)
+    if (!isLogin) {
+      return
+    }
     if (checkIsDownvoted) {
       setTotalDownvote(Math.max(totalDownvote - 1, 0))
     }
