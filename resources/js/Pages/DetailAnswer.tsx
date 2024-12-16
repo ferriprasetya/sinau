@@ -24,7 +24,8 @@ import {
 import ModalConfirm from '@/Components/ModalConfirm'
 import { Answer } from '@/types/question'
 import convertObjectCamelToSnakeCase from '@/lib/convertObjectCamelToSnakeCase'
-function DetailAnswer({ question, answers }: any) {
+import BackButton from '@/Components/BackButton'
+function DetailAnswer({ question, answers, educations }: any) {
   const { auth } = usePage().props as any
   const isLogin = !!auth.user
   const userId = auth.user?.id
@@ -140,11 +141,11 @@ function DetailAnswer({ question, answers }: any) {
   }
   return (
     <Layout>
-      <Head title='Beranda' />
+      <Head title={question.title} />
       <div className='container mx-auto mt-8 flex max-w-[1024px] flex-col items-start md:flex-row'>
         <div className='w-full space-y-8 px-4 sm:mx-auto'>
           <div className='flex w-full flex-col justify-between sm:flex-row sm:items-center md:gap-8'>
-            <div className='order-2 sm:order-1'>
+            <div className='order-2 hidden sm:order-1 sm:block'>
               <Breadcrumbs
                 separator='/'
                 itemClasses={{
@@ -154,16 +155,28 @@ function DetailAnswer({ question, answers }: any) {
                 <BreadcrumbItem>
                   <Link href='/question'>Pertanyaan</Link>
                 </BreadcrumbItem>
-                <BreadcrumbItem>{questionData.title}</BreadcrumbItem>
+                <BreadcrumbItem>
+                  {questionData.title.length > 10
+                    ? `${questionData.title.substring(0, 20)}...`
+                    : questionData.title}
+                </BreadcrumbItem>
               </Breadcrumbs>
             </div>
-            <div className='order-1 my-3 self-end sm:order-2 sm:my-0'>
-              <Button as={Link} href='/question/create' color='primaryGradient'>
-                Buat Pertanyaan
-              </Button>
+            <div className='order-1 flex justify-between sm:order-2'>
+              <BackButton className='block sm:hidden' />
+              <div className='my-3 self-end sm:my-0'>
+                <Button
+                  as={Link}
+                  href='/question/create'
+                  color='primaryGradient'
+                >
+                  Buat Pertanyaan
+                </Button>
+              </div>
             </div>
           </div>
           <QuestionCardDetail
+            educations={educations}
             question={questionData}
             onClickDownvote={onDownvoteQuestion}
             onClickUpvote={onUpvoteQuestion}

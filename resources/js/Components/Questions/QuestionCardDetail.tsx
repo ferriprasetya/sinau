@@ -14,8 +14,10 @@ import { IoPersonCircle } from 'react-icons/io5'
 import { HiMiniAcademicCap } from 'react-icons/hi2'
 import clsxm from '@/lib/clsxm'
 import { Link, usePage } from '@inertiajs/react'
+import CardCategory from '../CardCategory'
 
 interface QuestionCardProps {
+  educations: { id: string; label: string }[]
   question: Question
   onClickUpvote?: (_questionId: string) => void
   onClickDownvote?: (_questionId: string) => void
@@ -33,7 +35,10 @@ export default function QuestionCardDetail({
     downvote,
     isUpvoted,
     isDownvoted,
+    categories,
+    educationId,
   },
+  educations,
   onClickUpvote = () => {},
   onClickDownvote = () => {},
 }: QuestionCardProps) {
@@ -80,9 +85,23 @@ export default function QuestionCardDetail({
   return (
     <Card className='relative mb-6 px-5 py-4'>
       <CardHeader className='flex-col items-start px-4 pb-0 pt-2'>
-        <h1 className='text-lg font-semibold text-foreground-500 md:text-2xl'>
-          {title}
+        <h1 className='flex max-w-[90%] items-center text-lg font-semibold text-foreground-500 md:text-2xl'>
+          {title}{' '}
+          <div className='mx-3 h-1.5 w-1.5 rounded-full bg-primary-600'></div>
+          <div>
+            <div className='rounded-lg bg-gradient-primary px-2 py-1 text-xs font-medium text-primary-50'>
+              {
+                educations.find((education) => education.id === educationId)
+                  ?.label
+              }
+            </div>
+          </div>
         </h1>
+        <div className='flex flex-wrap'>
+          {categories?.map((category) => (
+            <CardCategory key={category.id} category={category} />
+          ))}
+        </div>
         <div className='my-4 flex items-center'>
           <div className='mr-3'>
             {user.profileUrl ? (

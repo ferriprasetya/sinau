@@ -19,6 +19,7 @@ export type Question = {
   totalAnswer?: number
   isUpvoted?: boolean
   isDownvoted?: boolean
+  educationId: string
 }
 
 export type QuestionListFilter = {

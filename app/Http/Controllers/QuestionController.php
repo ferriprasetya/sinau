@@ -30,8 +30,10 @@ class QuestionController extends Controller
     public function index(Request $request)
     {
         $questions = $this->questionService->getListQuestion($request);
+        $educations = Education::all();
         return Inertia::render('Question/QuestionList', [
-            'questions' => $questions
+            'questions' => $questions,
+            'educations' => $educations,
         ]);
     }
 
@@ -41,9 +43,11 @@ class QuestionController extends Controller
     public function show(string $slug)
     {
         $question = $this->questionService->getQuestionBySlug($slug);
+        $educations = Education::all();
         return Inertia::render('DetailAnswer', [
             'question' => $question['question'],
-            'answers' => $question['answers']
+            'answers' => $question['answers'],
+            'educations' => $educations,
         ]);
     }
 
