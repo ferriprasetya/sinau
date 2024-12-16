@@ -1,6 +1,7 @@
 import { Button } from '@/Components/Button'
 import { CategorySelect } from '@/Components/CategorySelect'
 import FilterMakeQuestion from '@/Components/FilterMakeQuestion'
+import ImageUpload from '@/Components/ImageUpload'
 import { Input } from '@/Components/Input'
 import ModalConfirm from '@/Components/ModalConfirm'
 import Typography from '@/Components/Typography'
@@ -85,7 +86,6 @@ function CreateQuestion({ educations }: { educations: Education[] }) {
             isComplex={isComplex}
             setIsComplex={setIsComplex}
           />
-          {/* <pre>{JSON.stringify(questionForm)}</pre> */}
           <div className='w-full rounded-xl bg-white px-4 py-4 md:px-6 md:py-6'>
             <Input
               errorMessage={questionFormError.title}
@@ -101,8 +101,32 @@ function CreateQuestion({ educations }: { educations: Education[] }) {
               description='Tuliskan judul yang singkat, mudah dimengerti, dan spesifik'
               classNames={{
                 label: 'text-base font-medium !text-foreground-500',
+                description: 'text-sm text-gray-500',
               }}
             />
+          </div>
+          <div
+            className={clsxm(
+              'w-full space-y-4 rounded-xl bg-white px-4 py-4 md:px-6 md:py-6',
+              !isComplex && 'hidden',
+            )}
+          >
+            <Typography
+              variant='bm'
+              className='font-medium text-foreground-500 max-md:text-base'
+            >
+              Unggah Gambar
+            </Typography>
+            <ImageUpload
+              image={questionForm.imageUrl}
+              setImage={(image) =>
+                setQuestionForm('imageUrl', image ?? undefined)
+              }
+            />
+            <p className='mt-0 text-sm text-gray-500'>
+              Tambahkan gambar untuk membantu orang lain menjawab pertanyaan
+              anda
+            </p>
           </div>
           <div className='mx-auto'>
             <CategorySelect
@@ -124,6 +148,7 @@ function CreateQuestion({ educations }: { educations: Education[] }) {
               onChange={(e) => setEducationForm(e.target.value)}
               classNames={{
                 label: 'text-base font-medium !text-foreground-500',
+                description: 'text-sm font-normal text-gray-500',
               }}
             >
               {(education) => (
@@ -140,12 +165,17 @@ function CreateQuestion({ educations }: { educations: Education[] }) {
           >
             <Textarea
               description='Tuliskan penjabaran dari pertanyaan anda secara rinci dan berikan informasi yang dapat membantu untuk menjawab pertanyaan anda'
-              label='Description'
-              placeholder='Enter your description'
+              label='Deskripsi'
+              placeholder='Tuliskan deskripsi singkat dari pertanyaan anda'
               labelPlacement='outside'
               onChange={(e) => setQuestionForm('description', e.target.value)}
               classNames={{
                 label: 'text-base font-medium !text-foreground-500',
+                description: 'text-sm font-normal text-gray-500',
+                input:
+                  'placeholder:!text-neutral-500 !border-none !outline-transparent !ring-transparent',
+                inputWrapper:
+                  'bg-neutral-50 data-[hover=true]:bg-neutral-100 group-data-[focus=true]:bg-neutral-50',
               }}
             />
           </div>
