@@ -137,7 +137,7 @@ export default function QuestionListPage({ questions }: any) {
         ? `Hasil pencarian: ${filter.search}`
         : (menuOptions.find((option) => option.key === selectedMenu)?.label ??
           'Semua Pertanyaan'),
-    [menuOptions, selectedMenu],
+    [menuOptions, selectedMenu, filter.search],
   )
   return (
     <Layout>

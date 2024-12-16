@@ -5,11 +5,12 @@ import { Input } from '@/Components/Input'
 import ModalConfirm from '@/Components/ModalConfirm'
 import Typography from '@/Components/Typography'
 import Layout from '@/Layouts/Layout'
+import clsxm from '@/lib/clsxm'
 import { mapQuestionCreatePayload } from '@/services/questions/QuestionMapper'
 import { Education } from '@/types/education'
 import { QuestionCreateRequest } from '@/types/question'
 import { Head, router, useForm, usePage } from '@inertiajs/react'
-import { Select, SelectItem, Textarea } from '@nextui-org/react'
+import { Select, SelectItem, Switch, Textarea } from '@nextui-org/react'
 import { useState } from 'react'
 
 function CreateQuestion({ educations }: { educations: Education[] }) {
@@ -17,7 +18,6 @@ function CreateQuestion({ educations }: { educations: Education[] }) {
   const isLogin = !!auth.user
 
   const [isConfirmLogin, setIsConfirmLogin] = useState(false)
-  console.log(isConfirmLogin)
 
   const toggleConfirmLogin = () => {
     setIsConfirmLogin(!isConfirmLogin)
@@ -39,6 +39,7 @@ function CreateQuestion({ educations }: { educations: Education[] }) {
     description: '',
     categories: [],
     education: null,
+    aiAnswer: true,
   })
 
   const onSubmitQuestion = () => {
@@ -73,7 +74,7 @@ function CreateQuestion({ educations }: { educations: Education[] }) {
     <Layout>
       <Head title='Buat Pertanyaan' />
       <div className='container mx-auto mt-8 w-full max-w-[1024px]'>
-        <div className='space-y-8 px-4'>
+        <div className='space-y-4 px-4 md:space-y-8'>
           <Typography
             variant='h5'
             className='font-semibold text-foreground-500'
@@ -85,7 +86,7 @@ function CreateQuestion({ educations }: { educations: Education[] }) {
             setIsComplex={setIsComplex}
           />
           {/* <pre>{JSON.stringify(questionForm)}</pre> */}
-          <div className='w-full rounded-xl bg-white px-6 py-6'>
+          <div className='w-full rounded-xl bg-white px-4 py-4 md:px-6 md:py-6'>
             <Input
               errorMessage={questionFormError.title}
               value={questionForm.title}
@@ -98,6 +99,9 @@ function CreateQuestion({ educations }: { educations: Education[] }) {
               labelPlacement='outside'
               placeholder='Contoh: Bagaimana cara membuat website?'
               description='Tuliskan judul yang singkat, mudah dimengerti, dan spesifik'
+              classNames={{
+                label: 'text-base font-medium !text-foreground-500',
+              }}
             />
           </div>
           <div className='mx-auto'>
@@ -107,17 +111,20 @@ function CreateQuestion({ educations }: { educations: Education[] }) {
               }}
             />
           </div>
-          <div className='w-full rounded-xl bg-white px-6 py-6'>
+          <div className='w-full rounded-xl bg-white px-4 py-4 md:px-6 md:py-6'>
             <Select
               isRequired
               label='Tingkat Pendidikan'
               placeholder='Pilih pendidikan'
-              className='text-sm font-medium text-foreground-500 md:text-medium'
+              className='text-base font-medium text-foreground-500'
               radius='sm'
               labelPlacement='outside'
               description='Pilih tingkat pendidikan yang sesuai dengan pertanyaan Anda'
               items={educations}
               onChange={(e) => setEducationForm(e.target.value)}
+              classNames={{
+                label: 'text-base font-medium !text-foreground-500',
+              }}
             >
               {(education) => (
                 <SelectItem key={education.id}>{education.label}</SelectItem>
@@ -126,7 +133,9 @@ function CreateQuestion({ educations }: { educations: Education[] }) {
           </div>
           <div
             className={
-              isComplex ? `w-full rounded-xl bg-white px-6 py-6` : 'hidden'
+              isComplex
+                ? `w-full rounded-xl bg-white px-4 py-4 md:px-6 md:py-6`
+                : 'hidden'
             }
           >
             <Textarea
@@ -135,7 +144,38 @@ function CreateQuestion({ educations }: { educations: Education[] }) {
               placeholder='Enter your description'
               labelPlacement='outside'
               onChange={(e) => setQuestionForm('description', e.target.value)}
+              classNames={{
+                label: 'text-base font-medium !text-foreground-500',
+              }}
             />
+          </div>
+          <div className='w-full rounded-xl bg-white px-4 py-4 md:px-6 md:py-6'>
+            <Typography
+              variant='bm'
+              className='font-semibold text-foreground-500 max-md:text-base'
+            >
+              Biar AI yang Bantu Jawab! 🤖
+            </Typography>
+            <Typography variant='bm' className='text-neutral-600'>
+              AI akan memberikan jawaban pertama dari pertanyaanmu. Nonaktifkan
+              opsi dibawah apabila tidak ingin dibantu AI.
+            </Typography>
+            <Switch
+              className='mt-4'
+              color='primary'
+              isSelected={questionForm.aiAnswer}
+              onValueChange={(value) => setQuestionForm('aiAnswer', value)}
+            >
+              <Typography
+                variant='bm'
+                className={clsxm(
+                  'font-medium',
+                  questionForm.aiAnswer ? 'text-primary' : 'text-neutral-600',
+                )}
+              >
+                {questionForm.aiAnswer ? 'AI Aktif' : 'AI Nonaktif'}
+              </Typography>
+            </Switch>
           </div>
           <div className='flex w-full justify-end'>
             <Button

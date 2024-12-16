@@ -12,6 +12,11 @@ use Illuminate\Http\Request;
 
 class QuestionService
 {
+    public function __construct(
+        protected GeminiService $geminiService,
+    ) {
+    }
+
     public function getListQuestion(Request $request): array|object
     {
         $questions = Question::with('user.badge', 'categories', 'votes')->withCount('answers');
@@ -57,7 +62,7 @@ class QuestionService
             'most-answered' => $questions->orderBy('answers_count', 'desc')->orderBy('created_at', 'desc'),
             'most-upvoted' => $questions->orderBy('upvote', 'desc'),
             default => $questions->orderBy('created_at', 'desc')->orderBy('upvote', 'desc'),
-        };        
+        };
 
         // pagination
         $questions = $questions->paginate(perPage: 10, page: $request->page ?? 1);
@@ -163,6 +168,16 @@ class QuestionService
 
             // Attach the categories to the question
             $question->categories()->attach($categoryIds);
+        }
+
+        // insert AI answer
+        if ($validated['ai_answer']) {
+            $answerContent = $this->geminiService->generateAnswer($question);
+
+            Answer::create([
+                'question_id' => $question->id,
+                'content' => $answerContent,
+            ]);
         }
 
         return $question;

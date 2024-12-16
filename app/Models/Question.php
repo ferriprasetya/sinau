@@ -48,6 +48,11 @@ class Question extends Model
         return $this->belongsTo(User::class);
     }
 
+    public function education()
+    {
+        return $this->belongsTo(Education::class);
+    }
+
     public function categories()
     {
         return $this->belongsToMany(Category::class, 'question_categories');
