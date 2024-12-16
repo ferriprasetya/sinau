@@ -4,9 +4,11 @@ namespace App\Services;
 
 use App\Http\Requests\Question\CreateQuestionRequest;
 use App\Http\Requests\Question\UpdateQuestionRequest;
+use App\Http\Requests\Question\VoteQuestionRequest;
 use App\Models\Answer;
 use App\Models\Category;
 use App\Models\Question;
+use App\Models\User;
 use App\Models\VoteQuestions;
 use Illuminate\Http\Request;
 
@@ -232,33 +234,38 @@ class QuestionService
     }
 
 
-    public function voteQuestion(string $questionId, bool $upvote)
+    public function voteQuestion(VoteQuestionRequest $request)
     {
-        if ($upvote) {
-            return $this->upvoteQuestion($questionId);
+        if ($request->is_upvote) {
+            return $this->upvoteQuestion($request);
         } else {
-            return $this->downvoteQuestion($questionId);
+            return $this->downvoteQuestion($request);
         }
     }
 
-    public function upvoteQuestion(string $questionId)
+    public function upvoteQuestion(VoteQuestionRequest $request)
     {
+        $questionId = $request->question_id;
         $userId = auth()->id();
         $upvoteQuestion = VoteQuestions::where('question_id', $questionId)->where('user_id', $userId);
         $question = Question::find($questionId);
 
+        $user = User::find($question->user_id);
         // check is already upvoted
         if ($upvoteQuestion->first()) {
             if ($upvoteQuestion->first()->is_upvote) {
                 $upvoteQuestion->delete();
 
                 $question->upvote -= 1;
+                $user->point -= 3;
             } else {
                 $upvoteQuestion->update([
                     'is_upvote' => true
                 ]);
                 $question->upvote += 1;
                 $question->downvote -= 1;
+
+                $user->point += 3;
             }
         } else {
             VoteQuestions::create([
@@ -267,17 +274,21 @@ class QuestionService
                 'is_upvote' => true
             ]);
             $question->upvote += 1;
+            $user->point += 3;
         }
         $question->save();
+        $user->save();
         return $question;
     }
 
-    public function downvoteQuestion(string $questionId)
+    public function downvoteQuestion(VoteQuestionRequest $request)
     {
+        $questionId = $request->question_id;
         $userId = auth()->id();
         $downvoteQuestion = VoteQuestions::where('question_id', $questionId)->where('user_id', $userId);
         $question = Question::find($questionId);
 
+        $user = User::find($question->user_id);
         // check is already downvoted
         if ($downvoteQuestion->first()) {
             if (!$downvoteQuestion->first()->is_upvote) {
@@ -290,6 +301,7 @@ class QuestionService
                 ]);
                 $question->downvote += 1;
                 $question->upvote -= 1;
+                $user->point -= 3;
             }
         } else {
             VoteQuestions::create([
@@ -300,6 +312,7 @@ class QuestionService
             $question->downvote += 1;
         }
         $question->save();
+        $user->save();
         return $question;
     }
 }
