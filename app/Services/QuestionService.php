@@ -14,6 +14,7 @@ class QuestionService
 {
     public function __construct(
         protected GeminiService $geminiService,
+        protected StorageService $storageService,
     ) {}
 
     public function getListQuestion(Request $request): array|object
@@ -151,7 +152,6 @@ class QuestionService
             'user_id' => auth()->id(),
             'title' => $validated['title'],
             'content' => $validated['content'] ?? "",
-            'image_url' => $validated['image_url'] ?? null,
             'education_id' => $validated['education_id'],
         ]);
         // Handle categories
@@ -178,12 +178,19 @@ class QuestionService
 
         // insert AI answer
         if ($validated['ai_answer']) {
-            $answerContent = $this->geminiService->generateAnswer($question);
+            $answerContent = $this->geminiService->generateAnswer($question, $validated['image_url']);
 
             Answer::create([
                 'question_id' => $question->id,
                 'content' => $answerContent,
             ]);
+        }
+
+        // handle image upload
+        if ($validated['image_url']) {
+            $url = $this->storageService->storeQuestionImage($request, $question);
+            $question->image_url = $url;
+            $question->save();
         }
 
         return $question;
