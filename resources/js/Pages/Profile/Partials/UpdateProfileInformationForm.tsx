@@ -35,7 +35,6 @@ export default function UpdateProfileInformation({
       gender: data.gender,
       date_of_birth: data.birthdate ? data.birthdate.toString() : null,
     }
-
     router.patch(route('profile.update'), payload)
   }
 
