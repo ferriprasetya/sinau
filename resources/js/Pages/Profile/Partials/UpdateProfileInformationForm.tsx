@@ -3,7 +3,9 @@ import InputLabel from '@/Components/InputLabel'
 import PrimaryButton from '@/Components/PrimaryButton'
 import TextInput from '@/Components/TextInput'
 import { Transition } from '@headlessui/react'
-import { Link, useForm, usePage } from '@inertiajs/react'
+import { Link, router, useForm, usePage } from '@inertiajs/react'
+import { parseDate } from '@internationalized/date'
+import { DatePicker, Select, SelectItem } from '@nextui-org/react'
 import { FormEventHandler } from 'react'
 
 export default function UpdateProfileInformation({
@@ -17,17 +19,71 @@ export default function UpdateProfileInformation({
 }) {
   const user = (usePage().props as any).auth.user
 
-  const { data, setData, patch, errors, processing, recentlySuccessful } =
-    useForm({
-      name: user.name,
-      email: user.email,
-    })
+  const { data, setData, errors, processing, recentlySuccessful } = useForm({
+    name: user.name,
+    email: user.email,
+    gender: user.gender,
+    birthdate: user.date_of_birth ? parseDate(user.date_of_birth) : null,
+  })
 
   const submit: FormEventHandler = (e) => {
     e.preventDefault()
 
-    patch(route('profile.update'))
+    const payload = {
+      name: data.name,
+      email: data.email,
+      gender: data.gender,
+      date_of_birth: data.birthdate ? data.birthdate.toString() : null,
+    }
+    router.patch(route('profile.update'), payload)
   }
+
+  console.log(data)
+
+  interface EditFormField {
+    id: string
+    label: string
+    value: string
+    onChange: (e: React.ChangeEvent<HTMLInputElement>) => void
+    required: boolean
+    isFocused: boolean
+    autoComplete: string
+    error?: string
+  }
+
+  const editForm: EditFormField[] = [
+    {
+      id: 'name',
+      label: 'Name',
+      value: data.name,
+      onChange: (e) => setData('name', e.target.value),
+      required: true,
+      isFocused: true,
+      autoComplete: 'name',
+      error: errors.name,
+    },
+    {
+      id: 'email',
+      label: 'Email',
+      value: data.email,
+      onChange: (e) => setData('email', e.target.value),
+      required: true,
+      isFocused: false,
+      autoComplete: 'username',
+      error: errors.email,
+    },
+  ]
+
+  const genders = [
+    {
+      id: 'm',
+      label: 'male',
+    },
+    {
+      id: 'f',
+      label: 'female',
+    },
+  ]
 
   return (
     <section className={className}>
@@ -42,36 +98,57 @@ export default function UpdateProfileInformation({
       </header>
 
       <form onSubmit={submit} className='mt-6 space-y-6'>
+        {editForm.map((field, index) => (
+          <div key={index}>
+            <InputLabel htmlFor={field.id} value={field.label} />
+
+            <TextInput
+              id={field.id}
+              className='mt-1 block w-full'
+              value={field.value}
+              onChange={field.onChange}
+              required={field.required}
+              isFocused={field.isFocused}
+              autoComplete={field.autoComplete}
+            />
+
+            <InputError className='mt-2' message={field.error} />
+          </div>
+        ))}
+
+        <Select
+          isRequired
+          label='Select Gender'
+          placeholder='Pilih gender'
+          className='mt-6 text-base font-medium text-foreground-500'
+          radius='sm'
+          labelPlacement='outside'
+          value={data.gender}
+          defaultSelectedKeys={data.gender}
+          items={genders}
+          onChange={(e) => setData('gender', e.target.value)}
+          classNames={{
+            label: 'text-base font-medium !text-foreground-500',
+            description: 'text-sm font-normal text-gray-500',
+          }}
+        >
+          {(education) => (
+            <SelectItem key={education.id}>{education.label}</SelectItem>
+          )}
+        </Select>
+
         <div>
-          <InputLabel htmlFor='name' value='Name' />
-
-          <TextInput
-            id='name'
-            className='mt-1 block w-full'
-            value={data.name}
-            onChange={(e) => setData('name', e.target.value)}
-            required
-            isFocused
-            autoComplete='name'
+          <DatePicker
+            className='max-w-[284px]'
+            label='Birth date'
+            labelPlacement='outside'
+            value={data.birthdate}
+            onChange={(date) => {
+              setData('birthdate', date)
+            }}
+            showMonthAndYearPickers
+            errorMessage={errors.birthdate ? 'Please enter a valid date.' : ''}
           />
-
-          <InputError className='mt-2' message={errors.name} />
-        </div>
-
-        <div>
-          <InputLabel htmlFor='email' value='Email' />
-
-          <TextInput
-            id='email'
-            type='email'
-            className='mt-1 block w-full'
-            value={data.email}
-            onChange={(e) => setData('email', e.target.value)}
-            required
-            autoComplete='username'
-          />
-
-          <InputError className='mt-2' message={errors.email} />
         </div>
 
         {mustVerifyEmail && user.email_verified_at === null && (
